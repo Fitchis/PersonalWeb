@@ -28,9 +28,9 @@ export default function Home() {
             <h2 className="text-3xl font-semibold text-white">Todo List</h2>
           </div>
           <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-xl">
-            <RequireAuth>
-              <TodoList />
-            </RequireAuth>
+            {/* <RequireAuth> */}
+            <TodoList />
+            {/* </RequireAuth> */}
           </div>
         </section>
 

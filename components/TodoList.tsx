@@ -31,7 +31,17 @@ const TodoList: React.FC = () => {
       body: JSON.stringify({ text: input }),
       headers: { "Content-Type": "application/json" },
     });
-    const newTodo = await res.json();
+    let newTodo = null;
+    try {
+      newTodo = await res.json();
+    } catch {
+      setLoading(false);
+      return;
+    }
+    if (!res.ok || !newTodo) {
+      setLoading(false);
+      return;
+    }
     setTodos([newTodo, ...todos]);
     setInput("");
     setLoading(false);
