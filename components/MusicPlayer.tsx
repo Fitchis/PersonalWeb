@@ -29,15 +29,17 @@ const MusicPlayer: React.FC = () => {
 
   // State untuk cek token di client agar tidak mismatch SSR/CSR
   const [hasToken, setHasToken] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  // Cek token hanya di client
+  // Cek token dan client mount
   useEffect(() => {
+    setIsClient(true);
     setHasToken(!!getCookie("spotify_access_token"));
   }, []);
 
   // Fetch playlist tracks hanya jika sudah ada token
   useEffect(() => {
-    if (!hasToken) return;
+    if (!isClient || !hasToken) return;
     const token = getCookie("spotify_access_token");
     if (!token) return;
     fetch(`https://api.spotify.com/v1/playlists/${DEFAULT_PLAYLIST}/tracks`, {
@@ -75,7 +77,7 @@ const MusicPlayer: React.FC = () => {
       .catch(() =>
         setError("Gagal mengambil playlist Spotify. Login ulang jika perlu.")
       );
-  }, [hasToken]);
+  }, [isClient, hasToken]);
 
   // Play/pause logic
   useEffect(() => {
@@ -87,6 +89,10 @@ const MusicPlayer: React.FC = () => {
   const playNext = () => setCurrent((c) => (c + 1) % tracks.length);
   const playPrev = () =>
     setCurrent((c) => (c - 1 + tracks.length) % tracks.length);
+
+  if (!isClient) {
+    return null;
+  }
 
   if (!hasToken) {
     return (
