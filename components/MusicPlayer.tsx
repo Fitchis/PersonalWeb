@@ -26,6 +26,7 @@ const MusicPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // State untuk cek token di client agar tidak mismatch SSR/CSR
   const [hasToken, setHasToken] = useState(false);
@@ -42,6 +43,7 @@ const MusicPlayer: React.FC = () => {
     if (!isClient || !hasToken) return;
     const token = getCookie("spotify_access_token");
     if (!token) return;
+    setIsLoading(true);
     fetch(`https://api.spotify.com/v1/playlists/${DEFAULT_PLAYLIST}/tracks`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -80,14 +82,16 @@ const MusicPlayer: React.FC = () => {
             uri: t.preview_url, // only preview_url for browser
           }));
         setTracks(items);
+        setIsLoading(false);
       })
-      .catch((e) =>
+      .catch((e) => {
         setError(
           e instanceof Error
             ? e.message
             : "Gagal mengambil playlist Spotify. Login ulang jika perlu."
-        )
-      );
+        );
+        setIsLoading(false);
+      });
   }, [isClient, hasToken]);
 
   // Play/pause logic
@@ -127,10 +131,20 @@ const MusicPlayer: React.FC = () => {
     );
   }
 
-  if (!tracks.length) {
+  if (isLoading) {
     return (
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900/90 border border-gray-700 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl backdrop-blur-lg">
         <span className="text-white font-semibold">Loading playlist...</span>
+      </div>
+    );
+  }
+
+  if (!tracks.length) {
+    return (
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-yellow-900/90 border border-yellow-700 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl backdrop-blur-lg">
+        <span className="text-yellow-200 font-semibold">
+          Playlist tidak memiliki track yang bisa diputar (preview_url kosong).
+        </span>
       </div>
     );
   }
