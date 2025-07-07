@@ -8,9 +8,13 @@ datasource db {
 }
 
 model Todo {
-  id    Int    @id @default(autoincrement())
-  text  String
-  done  Boolean @default(false)
+  id       Int      @id @default(autoincrement())
+  text     String
+  done     Boolean  @default(false)
+  deadline DateTime?
+  order    Int      @default(0)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 
@@ -19,15 +23,20 @@ model JobApplication {
   company  String
   position String
   status   String @default("pending")
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 
 model User {
   id            String   @id @default(cuid())
   name          String?
-  email         String?  @unique
+  email         String   @unique
+  password      String
   emailVerified DateTime?
   image         String?
+  todos         Todo[]
+  jobApplications JobApplication[]
   accounts      Account[]
   sessions      Session[]
 }

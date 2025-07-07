@@ -1,26 +1,95 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
+import Toast from "./Toast";
 
 interface Todo {
   id: number;
   text: string;
   done: boolean;
+  deadline?: string | null;
 }
 
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deadline, setDeadline] = useState<string>("");
+  const [toast, setToast] = useState<{
+    message: string;
+    type?: "success" | "error";
+  } | null>(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   // Fetch todos saat mount
   useEffect(() => {
     setLoading(true);
     fetch("/api/todos")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Gagal memuat data");
+        return res.json();
+      })
       .then((data) => setTodos(data))
+      .catch(() => setToast({ message: "Gagal memuat data", type: "error" }))
       .finally(() => setLoading(false));
   }, []);
+
+  // Reminder Toast jika ada todo deadline <24 jam, belum selesai, belum lewat
+  useEffect(() => {
+    if (!todos.length) return;
+    const now = new Date();
+    const soonTodos = todos.filter(
+      (todo) =>
+        todo.deadline &&
+        !todo.done &&
+        (() => {
+          const d = new Date(todo.deadline!);
+          const diff = d.getTime() - now.getTime();
+          return diff > 0 && diff < 1000 * 60 * 60 * 24;
+        })()
+    );
+    if (soonTodos.length > 0) {
+      setToast({
+        message: `Ada ${soonTodos.length} todo yang deadline-nya kurang dari 24 jam!`,
+        type: "error",
+      });
+    }
+    // hanya sekali per load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todos]);
+
+  // Drag & drop handler
+  const onDragEnd = async (result: DropResult) => {
+    if (!result.destination) return;
+    const newTodos = Array.from(todos);
+    const [removed] = newTodos.splice(result.source.index, 1);
+    newTodos.splice(result.destination.index, 0, removed);
+    setTodos(newTodos);
+    // Kirim urutan baru ke backend
+    try {
+      const res = await fetch("/api/todos", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order: newTodos.map((t) => t.id) }),
+      });
+      if (!res.ok) throw new Error();
+      setToast({ message: "Urutan todo diperbarui", type: "success" });
+    } catch {
+      setToast({ message: "Gagal update urutan todo", type: "error" });
+    }
+  };
 
   // Tambah todo
   const addTodo = async () => {
@@ -28,22 +97,32 @@ const TodoList: React.FC = () => {
     setLoading(true);
     const res = await fetch("/api/todos", {
       method: "POST",
-      body: JSON.stringify({ text: input }),
+      body: JSON.stringify({
+        text: input,
+        deadline: deadline ? new Date(deadline).toISOString() : undefined,
+      }),
       headers: { "Content-Type": "application/json" },
     });
     let newTodo = null;
     try {
       newTodo = await res.json();
     } catch {
+      setToast({ message: "Gagal menambah todo", type: "error" });
       setLoading(false);
       return;
     }
     if (!res.ok || !newTodo) {
+      setToast({
+        message: newTodo?.error || "Gagal menambah todo",
+        type: "error",
+      });
       setLoading(false);
       return;
     }
     setTodos([newTodo, ...todos]);
     setInput("");
+    setDeadline("");
+    setToast({ message: "Todo berhasil ditambahkan!", type: "success" });
     setLoading(false);
   };
 
@@ -55,95 +134,188 @@ const TodoList: React.FC = () => {
       body: JSON.stringify({ id, done: !done }),
       headers: { "Content-Type": "application/json" },
     });
-    const updated = await res.json();
+    let updated = null;
+    try {
+      updated = await res.json();
+    } catch {
+      setToast({ message: "Gagal update todo", type: "error" });
+      setLoading(false);
+      return;
+    }
+    if (!res.ok || !updated) {
+      setToast({
+        message: updated?.error || "Gagal update todo",
+        type: "error",
+      });
+      setLoading(false);
+      return;
+    }
     setTodos(todos.map((todo) => (todo.id === id ? updated : todo)));
+    setToast({ message: "Todo diperbarui", type: "success" });
     setLoading(false);
   };
 
   // Hapus todo
   const removeTodo = async (id: number) => {
     setLoading(true);
-    await fetch("/api/todos", {
+    const res = await fetch("/api/todos", {
       method: "DELETE",
       body: JSON.stringify({ id }),
       headers: { "Content-Type": "application/json" },
     });
+    if (!res.ok) {
+      setToast({ message: "Gagal menghapus todo", type: "error" });
+      setLoading(false);
+      return;
+    }
     setTodos(todos.filter((todo) => todo.id !== id));
+    setToast({ message: "Todo dihapus", type: "success" });
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Todo List
-        </h1>
+    <>
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="max-w-2xl mx-auto">
+          <h1 className="text-3xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+            Todo List
+          </h1>
+          <p className="text-gray-400 mb-6 text-center">
+            list dapat di drag & drop
+          </p>
 
-        <div className="mb-8 flex gap-3">
-          <input
-            type="text"
-            placeholder="Tambah todo..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addTodo()}
-            disabled={loading}
-            className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
-          />
-          <button
-            onClick={addTodo}
-            disabled={loading || !input.trim()}
-            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "..." : "Tambah"}
-          </button>
-        </div>
-
-        {loading && (
-          <div className="flex items-center justify-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
-            <span className="ml-2 text-gray-400">Loading...</span>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {todos.map((todo) => (
-            <div
-              key={todo.id}
-              className="flex items-center gap-4 p-4 bg-gray-800 rounded-lg border border-gray-700 hover:border-gray-600 transition-all duration-200 group"
+          <div className="mb-8 flex flex-col md:flex-row gap-3">
+            <input
+              type="text"
+              placeholder="Tambah todo..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addTodo()}
+              disabled={loading}
+              className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
+            />
+            <input
+              type="datetime-local"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              disabled={loading}
+              className="w-full md:w-64 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
+            />
+            <button
+              onClick={addTodo}
+              disabled={loading || !input.trim()}
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <input
-                type="checkbox"
-                checked={todo.done}
-                onChange={() => toggleDone(todo.id, todo.done)}
-                disabled={loading}
-                className="w-5 h-5 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 focus:ring-2 focus:ring-offset-gray-900 disabled:opacity-50"
-              />
-              <span
-                className={`flex-1 transition-all duration-200 ${
-                  todo.done ? "line-through text-gray-500" : "text-white"
-                }`}
-              >
-                {todo.text}
-              </span>
-              <button
-                onClick={() => removeTodo(todo.id)}
-                disabled={loading}
-                className="px-3 py-1 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded transition-all duration-200 disabled:opacity-50 opacity-0 group-hover:opacity-100"
-              >
-                Hapus
-              </button>
-            </div>
-          ))}
+              {loading ? "..." : "Tambah"}
+            </button>
+          </div>
 
-          {todos.length === 0 && !loading && (
-            <div className="text-center py-12 text-gray-500">
-              <div className="text-6xl mb-4">📝</div>
-              <p>Belum ada todo. Tambahkan satu!</p>
+          {loading && (
+            <div className="flex items-center justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+              <span className="ml-2 text-gray-400">Loading...</span>
             </div>
           )}
+
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="todo-list">
+              {(provided) => (
+                <div
+                  className="space-y-3"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {todos.map((todo, idx) => {
+                    // Reminder visual
+                    let deadlineBadge = null;
+                    if (todo.deadline) {
+                      const deadlineDate = new Date(todo.deadline);
+                      const now = new Date();
+                      const diff = deadlineDate.getTime() - now.getTime();
+                      let badgeColor = "bg-gray-600";
+                      let badgeText = deadlineDate.toLocaleString();
+                      if (diff < 0) {
+                        badgeColor = "bg-red-600";
+                        badgeText = `Lewat deadline (${deadlineDate.toLocaleString()})`;
+                      } else if (diff < 1000 * 60 * 60 * 24) {
+                        badgeColor = "bg-yellow-500 text-black";
+                        badgeText = `Deadline hari ini (${deadlineDate.toLocaleString()})`;
+                      }
+                      deadlineBadge = (
+                        <span
+                          className={`ml-2 px-2 py-1 rounded text-xs font-semibold ${badgeColor}`}
+                        >
+                          {badgeText}
+                        </span>
+                      );
+                    }
+                    return (
+                      <Draggable
+                        key={todo.id}
+                        draggableId={todo.id.toString()}
+                        index={idx}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={`flex items-center gap-4 p-4 bg-gray-800 rounded-lg border border-gray-700 hover:border-gray-600 transition-all duration-200 group ${
+                              snapshot.isDragging
+                                ? "ring-2 ring-purple-400"
+                                : ""
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={todo.done}
+                              onChange={() => toggleDone(todo.id, todo.done)}
+                              disabled={loading}
+                              className="w-5 h-5 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 focus:ring-2 focus:ring-offset-gray-900 disabled:opacity-50"
+                            />
+                            <span
+                              className={`flex-1 transition-all duration-200 ${
+                                todo.done
+                                  ? "line-through text-gray-500"
+                                  : "text-white"
+                              }`}
+                            >
+                              {todo.text}
+                              {deadlineBadge}
+                            </span>
+                            <button
+                              onClick={() => removeTodo(todo.id)}
+                              disabled={loading}
+                              className="px-3 py-1 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded transition-all duration-200 disabled:opacity-50 opacity-0 group-hover:opacity-100"
+                            >
+                              Hapus
+                            </button>
+                          </div>
+                        )}
+                      </Draggable>
+                    );
+                  })}
+                  {provided.placeholder}
+                  {todos.length === 0 && !loading && (
+                    <div className="text-center py-12 text-gray-500">
+                      <div className="text-6xl mb-4">📝</div>
+                      <p>Belum ada todo. Tambahkan satu!</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </div>
       </div>
-    </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+    </>
   );
 };
 
