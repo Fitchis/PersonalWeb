@@ -18,7 +18,7 @@ interface Track {
   uri: string;
 }
 
-const DEFAULT_PLAYLIST = "37i9dQZF1DXcBWIGoYBM5M"; // Spotify Today's Top Hits
+const DEFAULT_PLAYLIST = "3cEYpjA9oz9GiPac4AsH4n"; // Spotify Today's Top Hits
 
 const MusicPlayer: React.FC = () => {
   const [tracks, setTracks] = useState<Track[]>([]);
