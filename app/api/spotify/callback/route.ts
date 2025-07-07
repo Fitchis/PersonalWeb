@@ -38,17 +38,20 @@ async function getToken(code: string) {
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
+  const BASE_URL =
+    process.env.NEXTAUTH_URL?.replace(/\/$/, "") ||
+    "https://personal-web-fitchis-projects.vercel.app";
   if (!code) {
-    return NextResponse.redirect("/?error=NoCode");
+    return NextResponse.redirect(`${BASE_URL}/?error=NoCode`);
   }
   try {
     const token = await getToken(code);
     if (!token || !token.access_token) {
-      return NextResponse.redirect("/?error=TokenError");
+      return NextResponse.redirect(`${BASE_URL}/?error=TokenError`);
     }
     // Simpan token di cookie (httpOnly, secure jika production)
     const isProd = process.env.NODE_ENV === "production";
-    const res = NextResponse.redirect("/");
+    const res = NextResponse.redirect(`${BASE_URL}/`);
     res.cookies.set("spotify_access_token", token.access_token, {
       path: "/",
       httpOnly: true,
@@ -71,7 +74,7 @@ export async function GET(req: NextRequest) {
       message = err.message;
     }
     return NextResponse.redirect(
-      `/?error=SpotifyAuth&msg=${encodeURIComponent(message)}`
+      `${BASE_URL}/?error=SpotifyAuth&msg=${encodeURIComponent(message)}`
     );
   }
 }
