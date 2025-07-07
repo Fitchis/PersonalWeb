@@ -41,6 +41,15 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
+
+      const now = new Date();
+      if (d.getTime() < now.getTime() - 60000) {
+        // beri toleransi 1 menit
+        return NextResponse.json(
+          { error: "Time traveler kah maniz?" },
+          { status: 400 }
+        );
+      }
       deadlineDate = d;
     }
   }

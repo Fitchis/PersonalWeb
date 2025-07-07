@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 import {
   DragDropContext,
   Droppable,
@@ -21,6 +23,25 @@ const TodoList: React.FC = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [deadline, setDeadline] = useState<string>("");
+  const deadlineInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (deadlineInputRef.current) {
+      flatpickr(deadlineInputRef.current, {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        minDate: "today",
+        defaultDate: deadline || undefined,
+        onChange: (selectedDates) => {
+          if (selectedDates[0]) {
+            setDeadline(selectedDates[0].toISOString());
+          }
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [toast, setToast] = useState<{
     message: string;
     type?: "success" | "error";
@@ -202,12 +223,16 @@ const TodoList: React.FC = () => {
               className="flex-1 px-4 py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:opacity-50"
             />
             <input
-              type="datetime-local"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
+              ref={deadlineInputRef}
+              type="text"
+              value={deadline ? new Date(deadline).toLocaleString() : ""}
+              onChange={() => {}}
+              placeholder="Pilih deadline (opsional)"
               disabled={loading}
-              className="w-full md:w-64 px-4 py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:opacity-50"
+              className="w-full md:w-64 appearance-none px-4 py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 disabled:opacity-50 cursor-pointer"
+              readOnly
             />
+
             <button
               onClick={addTodo}
               disabled={loading || !input.trim()}
@@ -279,13 +304,19 @@ const TodoList: React.FC = () => {
                               className="w-5 h-5 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500 focus:ring-2 focus:ring-offset-gray-900 disabled:opacity-50"
                             />
                             <span
-                              className={`flex-1 transition-all duration-200 ${
+                              className={`flex-1 min-w-0 transition-all duration-200 ${
                                 todo.done
                                   ? "line-through text-gray-500"
                                   : "text-white"
                               }`}
+                              style={{ wordBreak: "break-word" }}
                             >
-                              {todo.text}
+                              <span
+                                className="block truncate max-w-full"
+                                title={todo.text}
+                              >
+                                {todo.text}
+                              </span>
                               {deadlineBadge}
                             </span>
                             <button
