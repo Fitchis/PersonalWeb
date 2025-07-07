@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     const res = NextResponse.redirect(`${BASE_URL}/`);
     res.cookies.set("spotify_access_token", token.access_token, {
       path: "/",
-      httpOnly: true,
+      httpOnly: false, // agar bisa diakses JS (MusicPlayer)
       secure: isProd,
       maxAge: token.expires_in,
       sameSite: "lax",
