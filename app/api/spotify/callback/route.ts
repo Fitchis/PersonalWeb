@@ -14,15 +14,25 @@ async function getToken(code: string) {
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET,
   });
-  const res = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: params.toString(),
-  });
-  if (!res.ok) return null;
-  return res.json();
+  try {
+    const res = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params.toString(),
+    });
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Spotify token error: ${res.status} ${errorText}`);
+    }
+    return res.json();
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      throw new Error(`Fetch token failed: ${err.message}`);
+    }
+    throw new Error("Fetch token failed: Unknown error");
+  }
 }
 
 export async function GET(req: NextRequest) {
@@ -31,26 +41,37 @@ export async function GET(req: NextRequest) {
   if (!code) {
     return NextResponse.redirect("/?error=NoCode");
   }
-  const token = await getToken(code);
-  if (!token || !token.access_token) {
-    return NextResponse.redirect("/?error=TokenError");
+  try {
+    const token = await getToken(code);
+    if (!token || !token.access_token) {
+      return NextResponse.redirect("/?error=TokenError");
+    }
+    // Simpan token di cookie (httpOnly, secure jika production)
+    const isProd = process.env.NODE_ENV === "production";
+    const res = NextResponse.redirect("/");
+    res.cookies.set("spotify_access_token", token.access_token, {
+      path: "/",
+      httpOnly: true,
+      secure: isProd,
+      maxAge: token.expires_in,
+      sameSite: "lax",
+    });
+    res.cookies.set("spotify_refresh_token", token.refresh_token, {
+      path: "/",
+      httpOnly: true,
+      secure: isProd,
+      maxAge: 60 * 60 * 24 * 30, // 30 hari
+      sameSite: "lax",
+    });
+    return res;
+  } catch (err: unknown) {
+    // Tampilkan error detail di query string agar mudah debug
+    let message = "Unknown error";
+    if (err instanceof Error) {
+      message = err.message;
+    }
+    return NextResponse.redirect(
+      `/?error=SpotifyAuth&msg=${encodeURIComponent(message)}`
+    );
   }
-  // Simpan token di cookie (httpOnly, secure jika production)
-  const isProd = process.env.NODE_ENV === "production";
-  const res = NextResponse.redirect("/");
-  res.cookies.set("spotify_access_token", token.access_token, {
-    path: "/",
-    httpOnly: true,
-    secure: isProd,
-    maxAge: token.expires_in,
-    sameSite: "lax",
-  });
-  res.cookies.set("spotify_refresh_token", token.refresh_token, {
-    path: "/",
-    httpOnly: true,
-    secure: isProd,
-    maxAge: 60 * 60 * 24 * 30, // 30 hari
-    sameSite: "lax",
-  });
-  return res;
 }
