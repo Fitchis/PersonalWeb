@@ -27,8 +27,17 @@ const MusicPlayer: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch playlist tracks
+  // State untuk cek token di client agar tidak mismatch SSR/CSR
+  const [hasToken, setHasToken] = useState(false);
+
+  // Cek token hanya di client
   useEffect(() => {
+    setHasToken(!!getCookie("spotify_access_token"));
+  }, []);
+
+  // Fetch playlist tracks hanya jika sudah ada token
+  useEffect(() => {
+    if (!hasToken) return;
     const token = getCookie("spotify_access_token");
     if (!token) return;
     fetch(`https://api.spotify.com/v1/playlists/${DEFAULT_PLAYLIST}/tracks`, {
@@ -66,7 +75,7 @@ const MusicPlayer: React.FC = () => {
       .catch(() =>
         setError("Gagal mengambil playlist Spotify. Login ulang jika perlu.")
       );
-  }, []);
+  }, [hasToken]);
 
   // Play/pause logic
   useEffect(() => {
@@ -79,7 +88,7 @@ const MusicPlayer: React.FC = () => {
   const playPrev = () =>
     setCurrent((c) => (c - 1 + tracks.length) % tracks.length);
 
-  if (!getCookie("spotify_access_token")) {
+  if (!hasToken) {
     return (
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900/90 border border-gray-700 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl backdrop-blur-lg">
         <span className="text-white font-semibold">Music Player</span>

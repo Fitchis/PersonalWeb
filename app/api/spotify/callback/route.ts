@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     res.cookies.set("spotify_access_token", token.access_token, {
       path: "/",
       httpOnly: false, // agar bisa diakses JS (MusicPlayer)
-      secure: isProd,
+      secure: false, // sementara, agar bisa muncul di cookies untuk testing
       maxAge: token.expires_in,
       sameSite: "lax",
     });
