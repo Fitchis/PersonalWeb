@@ -151,25 +151,32 @@ const JobApplicationList: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-900 text-white p-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+      <div className="min-h-screen bg-black text-white p-4 sm:p-6 md:p-8 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(156,163,175,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(107,114,128,0.08),transparent_50%)]"></div>
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[length:50px_50px] animate-pulse"></div>
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
             Job Application Tracker
           </h1>
 
           {/* Add Application Form */}
-          <div className="mb-8 p-6 bg-gray-800 rounded-xl border border-gray-700 shadow-xl">
-            <h2 className="text-xl font-semibold mb-4 text-gray-200">
+          <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-900/60 rounded-xl border border-gray-700/60 shadow-xl backdrop-blur-sm">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-200">
               Tambah Aplikasi Baru
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <input
                 type="text"
                 placeholder="Nama perusahaan"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 disabled={loading}
-                className="px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
+                className="px-3 py-2 sm:px-4 sm:py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white placeholder-gray-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:opacity-50"
               />
               <input
                 type="text"
@@ -177,13 +184,13 @@ const JobApplicationList: React.FC = () => {
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
                 disabled={loading}
-                className="px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
+                className="px-3 py-2 sm:px-4 sm:py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white placeholder-gray-400 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:opacity-50"
               />
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as Status)}
                 disabled={loading}
-                className="px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
+                className="px-3 py-2 sm:px-4 sm:py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:opacity-50"
               >
                 <option value="pending">Pending</option>
                 <option value="accept">Accept</option>
@@ -192,7 +199,7 @@ const JobApplicationList: React.FC = () => {
               <button
                 onClick={addApplication}
                 disabled={loading || !company.trim() || !position.trim()}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg font-semibold text-sm sm:text-base hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-600"
               >
                 {loading ? "..." : "Tambah"}
               </button>
@@ -202,16 +209,17 @@ const JobApplicationList: React.FC = () => {
           {/* Loading Indicator */}
           {loading && (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-400"></div>
               <span className="ml-3 text-gray-400">Loading...</span>
             </div>
           )}
 
           {/* Applications Table */}
-          <div className="bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="bg-gray-900/60 rounded-xl border border-gray-700/60 shadow-xl overflow-hidden backdrop-blur-sm">
+            {/* Responsive Table for Desktop, Cards for Mobile */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-700 border-b border-gray-600">
+                <thead className="bg-gray-800 border-b border-gray-700/60">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 uppercase tracking-wider">
                       Perusahaan
@@ -227,12 +235,12 @@ const JobApplicationList: React.FC = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-gray-800/80">
                   {applications.map((app, index) => (
                     <tr
                       key={app.id ? `jobapp-${app.id}` : `jobapp-row-${index}`}
-                      className={`hover:bg-gray-750 transition-colors duration-200 ${
-                        index % 2 === 0 ? "bg-gray-800" : "bg-gray-825"
+                      className={`hover:bg-gray-800/60 transition-colors duration-200 ${
+                        index % 2 === 0 ? "bg-gray-900/60" : "bg-gray-900/40"
                       }`}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -267,7 +275,7 @@ const JobApplicationList: React.FC = () => {
                               updateStatus(app.id, e.target.value as Status)
                             }
                             disabled={loading}
-                            className="ml-2 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50"
+                            className="ml-2 px-2 py-1 bg-gray-900/60 border border-gray-700/60 rounded text-white text-xs focus:outline-none focus:ring-1 focus:ring-gray-500 transition-all duration-200 disabled:opacity-50"
                           >
                             <option value="pending">Pending</option>
                             <option value="accept">Accept</option>
@@ -289,64 +297,118 @@ const JobApplicationList: React.FC = () => {
                 </tbody>
               </table>
             </div>
-
-            {/* Empty State */}
-            {applications.length === 0 && !loading && (
-              <div className="text-center py-16 px-6">
-                <div className="text-6xl mb-4">💼</div>
-                <h3 className="text-xl font-semibold text-gray-300 mb-2">
-                  Belum ada aplikasi pekerjaan
-                </h3>
-                <p className="text-gray-500">
-                  Mulai tambahkan aplikasi pekerjaan Anda untuk melacak status
-                  lamaran.
-                </p>
-              </div>
-            )}
+            {/* Mobile Card List */}
+            <div className="md:hidden divide-y divide-gray-800/80">
+              {applications.map((app, index) => (
+                <div
+                  key={
+                    app.id ? `jobapp-mob-${app.id}` : `jobapp-mob-row-${index}`
+                  }
+                  className={`flex flex-col gap-2 py-4 px-3 ${
+                    index % 2 === 0 ? "bg-gray-900/60" : "bg-gray-900/40"
+                  } rounded-none`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-base font-semibold text-white">
+                      {app.company}
+                    </span>
+                    <button
+                      onClick={() => removeApplication(app.id)}
+                      disabled={loading}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-900/20 px-2 py-1 rounded text-xs transition-all duration-200 disabled:opacity-50"
+                    >
+                      🗑️ Hapus
+                    </button>
+                  </div>
+                  <div className="text-sm text-gray-300 mb-1">
+                    {app.position}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        app.status
+                      )}`}
+                    >
+                      <span className="mr-1">{getStatusIcon(app.status)}</span>
+                      {app.status === "accept"
+                        ? "Diterima"
+                        : app.status === "reject"
+                        ? "Ditolak"
+                        : "Pending"}
+                    </span>
+                    <select
+                      value={app.status}
+                      onChange={(e) =>
+                        updateStatus(app.id, e.target.value as Status)
+                      }
+                      disabled={loading}
+                      className="ml-2 px-2 py-1 bg-gray-900/60 border border-gray-700/60 rounded text-white text-xs focus:outline-none focus:ring-1 focus:ring-gray-500 transition-all duration-200 disabled:opacity-50"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="accept">Accept</option>
+                      <option value="reject">Reject</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+              {/* Empty State for Mobile */}
+              {applications.length === 0 && !loading && (
+                <div className="text-center py-12 px-4">
+                  <div className="text-5xl mb-3">💼</div>
+                  <h3 className="text-lg font-semibold text-gray-300 mb-1">
+                    Belum ada aplikasi pekerjaan
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    Mulai tambahkan aplikasi pekerjaan Anda untuk melacak status
+                    lamaran.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Stats Summary */}
           {applications.length > 0 && (
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <div className="flex items-center">
-                  <div className="text-3xl text-yellow-400 mr-3">⏳</div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">
-                      {
-                        applications.filter((app) => app.status === "pending")
-                          .length
-                      }
-                    </div>
-                    <div className="text-sm text-gray-400">Pending</div>
+            <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div className="bg-gray-900/60 rounded-xl p-4 sm:p-6 border border-gray-700/60 backdrop-blur-sm flex items-center gap-3">
+                <div className="text-2xl sm:text-3xl text-yellow-400">⏳</div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">
+                    {
+                      applications.filter((app) => app.status === "pending")
+                        .length
+                    }
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Pending
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <div className="flex items-center">
-                  <div className="text-3xl text-green-400 mr-3">✓</div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">
-                      {
-                        applications.filter((app) => app.status === "accept")
-                          .length
-                      }
-                    </div>
-                    <div className="text-sm text-gray-400">Diterima</div>
+              <div className="bg-gray-900/60 rounded-xl p-4 sm:p-6 border border-gray-700/60 backdrop-blur-sm flex items-center gap-3">
+                <div className="text-2xl sm:text-3xl text-green-400">✓</div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">
+                    {
+                      applications.filter((app) => app.status === "accept")
+                        .length
+                    }
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Diterima
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <div className="flex items-center">
-                  <div className="text-3xl text-red-400 mr-3">✗</div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">
-                      {
-                        applications.filter((app) => app.status === "reject")
-                          .length
-                      }
-                    </div>
-                    <div className="text-sm text-gray-400">Ditolak</div>
+              <div className="bg-gray-900/60 rounded-xl p-4 sm:p-6 border border-gray-700/60 backdrop-blur-sm flex items-center gap-3">
+                <div className="text-2xl sm:text-3xl text-red-400">✗</div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">
+                    {
+                      applications.filter((app) => app.status === "reject")
+                        .length
+                    }
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-400">
+                    Ditolak
                   </div>
                 </div>
               </div>

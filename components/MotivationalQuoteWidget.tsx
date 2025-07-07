@@ -44,13 +44,13 @@ function getQuoteOfTheDay() {
 export default function MotivationalQuoteWidget() {
   const quote = getQuoteOfTheDay();
   return (
-    <div className="bg-gradient-to-br from-cyan-900 via-blue-900 to-purple-900 rounded-xl p-4 shadow-lg border border-cyan-700 w-full h-full flex flex-col justify-center items-center text-center text-sm max-w-xs min-w-[180px] min-h-[180px]">
+    <div className="bg-gray-900/60 rounded-xl p-3 md:p-4 shadow-lg border border-gray-700/60 w-full h-full flex flex-col justify-center items-center text-center text-xs md:text-sm min-h-[120px] md:min-h-[160px] backdrop-blur-sm">
       <svg
-        width="28"
-        height="28"
+        width="32"
+        height="32"
         viewBox="0 0 24 24"
         fill="none"
-        className="mb-2 text-cyan-400"
+        className="mb-1 md:mb-2 text-gray-300"
       >
         <path
           d="M7.5 7.5C7.5 5.01472 9.51472 3 12 3C14.4853 3 16.5 5.01472 16.5 7.5C16.5 9.98528 14.4853 12 12 12C9.51472 12 7.5 9.98528 7.5 7.5Z"
@@ -63,10 +63,10 @@ export default function MotivationalQuoteWidget() {
           strokeWidth="2"
         />
       </svg>
-      <p className="text-base md:text-lg font-semibold italic mb-2 text-cyan-100 leading-snug drop-shadow-lg">
+      <p className="text-xs md:text-base font-semibold italic mb-1 md:mb-2 text-gray-100 leading-snug drop-shadow-lg">
         “{quote.text}”
       </p>
-      <span className="text-xs md:text-sm text-cyan-300 font-medium tracking-wide">
+      <span className="text-[10px] md:text-xs text-gray-400 font-medium tracking-wide">
         — {quote.author}
       </span>
     </div>

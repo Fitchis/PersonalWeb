@@ -22,7 +22,7 @@ export default function MiniCalendarWidget() {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 rounded-xl p-3 shadow-lg border border-gray-700 w-full h-full flex flex-col justify-between text-sm max-w-xs min-w-[180px] min-h-[220px]">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 rounded-xl p-3 shadow-lg border border-gray-700 w-full h-full flex flex-col">
       <div>
         <div className="flex justify-between items-center mb-3">
           <span className="font-bold text-xl text-cyan-400 tracking-wide">

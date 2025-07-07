@@ -175,9 +175,16 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-900 text-white p-8">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold mb-4 text-center bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+      <div className="min-h-screen bg-black text-white p-8 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(156,163,175,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(107,114,128,0.08),transparent_50%)]"></div>
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[length:50px_50px] animate-pulse"></div>
+        </div>
+        <div className="max-w-2xl mx-auto relative z-10">
+          <h1 className="text-3xl font-bold mb-4 text-center bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
             Todo List
           </h1>
           <p className="text-gray-400 mb-6 text-center">
@@ -192,19 +199,19 @@ const TodoList: React.FC = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addTodo()}
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
+              className="flex-1 px-4 py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:opacity-50"
             />
             <input
               type="datetime-local"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
               disabled={loading}
-              className="w-full md:w-64 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
+              className="w-full md:w-64 px-4 py-3 bg-gray-900/60 border border-gray-700/60 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:opacity-50"
             />
             <button
               onClick={addTodo}
               disabled={loading || !input.trim()}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg font-semibold hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-600"
             >
               {loading ? "..." : "Tambah"}
             </button>
@@ -260,10 +267,8 @@ const TodoList: React.FC = () => {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className={`flex items-center gap-4 p-4 bg-gray-800 rounded-lg border border-gray-700 hover:border-gray-600 transition-all duration-200 group ${
-                              snapshot.isDragging
-                                ? "ring-2 ring-purple-400"
-                                : ""
+                            className={`flex items-center gap-4 p-4 bg-gray-900/60 rounded-lg border border-gray-700/60 hover:border-gray-400 transition-all duration-200 group ${
+                              snapshot.isDragging ? "ring-2 ring-gray-400" : ""
                             }`}
                           >
                             <input
@@ -286,9 +291,10 @@ const TodoList: React.FC = () => {
                             <button
                               onClick={() => removeTodo(todo.id)}
                               disabled={loading}
-                              className="px-3 py-1 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded transition-all duration-200 disabled:opacity-50 opacity-0 group-hover:opacity-100"
+                              className="px-3 py-1 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded transition-all duration-200 disabled:opacity-50 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100"
                             >
-                              Hapus
+                              <span className="inline md:hidden">🗑️</span>
+                              <span className="hidden md:inline">Hapus</span>
                             </button>
                           </div>
                         )}
