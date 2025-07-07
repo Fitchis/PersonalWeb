@@ -45,8 +45,15 @@ const MusicPlayer: React.FC = () => {
     fetch(`https://api.spotify.com/v1/playlists/${DEFAULT_PLAYLIST}/tracks`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal fetch playlist");
+      .then(async (res) => {
+        if (!res.ok) {
+          let msg = "Gagal fetch playlist";
+          try {
+            const errJson = await res.json();
+            msg += ": " + (errJson.error?.message || JSON.stringify(errJson));
+          } catch {}
+          throw new Error(msg);
+        }
         return res.json();
       })
       .then((data) => {
@@ -74,8 +81,12 @@ const MusicPlayer: React.FC = () => {
           }));
         setTracks(items);
       })
-      .catch(() =>
-        setError("Gagal mengambil playlist Spotify. Login ulang jika perlu.")
+      .catch((e) =>
+        setError(
+          e instanceof Error
+            ? e.message
+            : "Gagal mengambil playlist Spotify. Login ulang jika perlu."
+        )
       );
   }, [isClient, hasToken]);
 
