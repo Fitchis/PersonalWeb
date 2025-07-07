@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Web Dashboard - Next.js, Prisma, NextAuth
 
-## Getting Started
+Dashboard modern dengan tema dark, autentikasi custom, Todo List, dan Job Application tracker per user.
 
-First, run the development server:
+## Fitur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Autentikasi custom** (NextAuth + Prisma, tanpa avatar/gambar)
+- **Todo List** per user: CRUD, deadline, reminder otomatis, drag & drop urutan
+- **Job Application Tracker**: CRUD, status (pending/accept/reject), stats breakdown
+- **Proteksi akses** (RequireAuth)
+- **Edit profil** (nama & password, tanpa gambar)
+- **Notifikasi Toast** di semua aksi utama
+- **Widget Motivational Quote** & **Mini Calendar**
+- **Stats Section** real-time (productivity, streak, breakdown)
+- **UI/UX dark modern**: responsif, animasi, grid, sticky navbar, minimalis footer
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Cara Menjalankan
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Install dependencies:**
+   ```bash
+   npm install
+   # atau
+   yarn install
+   ```
+2. **Setup database:**
+   - Edit `prisma/schema.prisma` jika perlu
+   - Jalankan migrasi & generate Prisma Client:
+     ```bash
+     npx prisma migrate dev --name init
+     npx prisma generate
+     ```
+3. **Jalankan development server:**
+   ```bash
+   npm run dev
+   ```
+4. **Akses di browser:**
+   [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Struktur Fitur
 
-## Learn More
+- **Autentikasi:**
+  - Register, login, proteksi akses, edit profil (tanpa gambar)
+- **Todo List:**
+  - CRUD, deadline, reminder <24 jam, drag & drop, urutan tersimpan
+- **Job Application:**
+  - CRUD, status, stats breakdown, tampilan tabel (desktop) & card (mobile)
+- **Widget:**
+  - Motivational Quote, Mini Calendar
+- **Stats Section:**
+  - Real-time, productivity, streak, breakdown
 
-To learn more about Next.js, take a look at the following resources:
+## Teknologi
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js App Router
+- Prisma ORM + SQLite/Postgres
+- NextAuth (CredentialsProvider)
+- bcryptjs (hash password)
+- TailwindCSS (dark theme, animasi, grid)
+- @hello-pangea/dnd (drag & drop)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Catatan
 
-## Deploy on Vercel
+- Tidak ada fitur upload/preview gambar profil
+- Semua aksi utama ada notifikasi Toast
+- Sudah dioptimalkan untuk mobile & desktop
+- Script `postinstall` otomatis generate Prisma Client (untuk deploy Vercel)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> Dibuat untuk latihan Next.js, Prisma, dan UI/UX modern. Silakan fork/clone & kembangkan sesuai kebutuhan!
