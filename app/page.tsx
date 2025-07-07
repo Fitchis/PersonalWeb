@@ -1,5 +1,9 @@
 "use client";
 import React from "react";
+import dynamic from "next/dynamic";
+const MusicPlayer = dynamic(() => import("../components/MusicPlayer"), {
+  ssr: false,
+});
 import TodoList from "../components/TodoList";
 import JobApplicationList from "../components/JobApplicationList";
 import AuthButton from "../components/AuthButton";
@@ -162,6 +166,8 @@ export default function Home() {
 
         {/* Footer */}
         <Footer />
+        {/* Music Player */}
+        <MusicPlayer />
       </div>
 
       {/* Floating Elements */}
