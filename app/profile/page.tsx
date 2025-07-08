@@ -44,7 +44,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center">
         <div className="text-center p-8 bg-red-500/10 backdrop-blur-lg rounded-2xl border border-red-500/20">
           <div className="text-red-400 text-xl font-medium">
-            Silakan login untuk mengakses profil.
+            Please log in to access your profile.
           </div>
         </div>
       </div>
@@ -63,11 +63,14 @@ export default function ProfilePage() {
     const data = await res.json();
     setLoading(false);
     if (!res.ok) {
-      setError(data.error || "Gagal update profil");
-      setToast({ message: data.error || "Gagal update profil", type: "error" });
+      setError(data.error || "Failed to update profile");
+      setToast({
+        message: data.error || "Failed to update profile",
+        type: "error",
+      });
     } else {
-      setSuccess("Profil berhasil diupdate");
-      setToast({ message: "Profil berhasil diupdate", type: "success" });
+      setSuccess("Profile updated successfully");
+      setToast({ message: "Profile updated successfully", type: "success" });
       await update();
       setPassword("");
       setTimeout(() => {
@@ -75,7 +78,6 @@ export default function ProfilePage() {
       }, 1200);
     }
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
       {/* Background Effects */}
@@ -123,10 +125,10 @@ export default function ProfilePage() {
                   </svg>
                 </div>
                 <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
-                  Edit Profil
+                  Edit Profile
                 </h1>
                 <p className="text-center text-gray-400 mt-2">
-                  Perbarui informasi akun Anda
+                  Update your account information
                 </p>
               </div>
             </div>
@@ -239,7 +241,7 @@ export default function ProfilePage() {
                   className="w-1/2 bg-gray-700 text-gray-200 py-4 rounded-xl font-semibold border border-gray-600 hover:bg-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
                   disabled={loading}
                 >
-                  Batal
+                  Cancel
                 </button>
                 <button
                   type="submit"
@@ -251,7 +253,7 @@ export default function ProfilePage() {
                     {loading && (
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     )}
-                    <span>{loading ? "Menyimpan..." : "Simpan Perubahan"}</span>
+                    <span>{loading ? "Saving..." : "Save Changes"}</span>
                   </div>
                 </button>
               </div>

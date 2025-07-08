@@ -35,11 +35,11 @@ const JobApplicationList: React.FC = () => {
     setLoading(true);
     fetch("/api/jobs")
       .then((res) => {
-        if (!res.ok) throw new Error("Gagal memuat data");
+        if (!res.ok) throw new Error("Error fetching jobs");
         return res.json();
       })
       .then((data) => setApplications(data))
-      .catch(() => setToast({ message: "Gagal memuat data", type: "error" }))
+      .catch(() => setToast({ message: "Error fetching jobs", type: "error" }))
       .finally(() => setLoading(false));
   }, []);
 
@@ -56,13 +56,13 @@ const JobApplicationList: React.FC = () => {
     try {
       newApp = await res.json();
     } catch {
-      setToast({ message: "Gagal menambah aplikasi", type: "error" });
+      setToast({ message: "Failed to add application", type: "error" });
       setLoading(false);
       return;
     }
     if (!res.ok || !newApp) {
       setToast({
-        message: newApp?.error || "Gagal menambah aplikasi",
+        message: newApp?.error || "Failed to add application",
         type: "error",
       });
       setLoading(false);
@@ -72,11 +72,11 @@ const JobApplicationList: React.FC = () => {
     setCompany("");
     setPosition("");
     setStatus("pending");
-    setToast({ message: "Aplikasi berhasil ditambahkan!", type: "success" });
+    setToast({ message: "Application added successfully!", type: "success" });
     setLoading(false);
   };
 
-  // Update status aplikasi
+  // Update status application
   const updateStatus = async (id: number, newStatus: Status) => {
     setLoading(true);
     const res = await fetch("/api/jobs", {
@@ -88,24 +88,24 @@ const JobApplicationList: React.FC = () => {
     try {
       updated = await res.json();
     } catch {
-      setToast({ message: "Gagal update status", type: "error" });
+      setToast({ message: "Failed to update status", type: "error" });
       setLoading(false);
       return;
     }
     if (!res.ok || !updated) {
       setToast({
-        message: updated?.error || "Gagal update status",
+        message: updated?.error || "Failed to update status",
         type: "error",
       });
       setLoading(false);
       return;
     }
     setApplications(applications.map((app) => (app.id === id ? updated : app)));
-    setToast({ message: "Status aplikasi diperbarui", type: "success" });
+    setToast({ message: "Application status updated", type: "success" });
     setLoading(false);
   };
 
-  // Hapus aplikasi
+  // Delete aplikasi
   const removeApplication = async (id: number) => {
     setLoading(true);
     const res = await fetch("/api/jobs", {
@@ -114,12 +114,12 @@ const JobApplicationList: React.FC = () => {
       headers: { "Content-Type": "application/json" },
     });
     if (!res.ok) {
-      setToast({ message: "Gagal menghapus aplikasi", type: "error" });
+      setToast({ message: "Failed to delete application", type: "error" });
       setLoading(false);
       return;
     }
     setApplications(applications.filter((app) => app.id !== id));
-    setToast({ message: "Aplikasi dihapus", type: "success" });
+    setToast({ message: "Application deleted", type: "success" });
     setLoading(false);
   };
 
@@ -151,7 +151,8 @@ const JobApplicationList: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-black text-white p-4 sm:p-6 md:p-8 relative overflow-hidden">
+      {/* className="bg-gray-900/60 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:border-gray-600/70 hover:bg-gray-800/70" */}
+      <div className="min-h-screen bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:border-gray-600/70 hover:bg-gray-800/70 text-white p-4 sm:p-6 md:p-8 relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(156,163,175,0.1),transparent_50%)]"></div>
@@ -167,12 +168,12 @@ const JobApplicationList: React.FC = () => {
           {/* Add Application Form */}
           <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-900/60 rounded-xl border border-gray-700/60 shadow-xl backdrop-blur-sm">
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-200">
-              Tambah Aplikasi Baru
+              Add New Application Job
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <input
                 type="text"
-                placeholder="Nama perusahaan"
+                placeholder="Company Name"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 disabled={loading}
@@ -180,7 +181,7 @@ const JobApplicationList: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Posisi yang dilamar"
+                placeholder="Position"
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
                 disabled={loading}
@@ -201,7 +202,7 @@ const JobApplicationList: React.FC = () => {
                 disabled={loading || !company.trim() || !position.trim()}
                 className="px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg font-semibold text-sm sm:text-base hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-600"
               >
-                {loading ? "..." : "Tambah"}
+                {loading ? "..." : "Add"}
               </button>
             </div>
           </div>
@@ -222,16 +223,16 @@ const JobApplicationList: React.FC = () => {
                 <thead className="bg-gray-800 border-b border-gray-700/60">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 uppercase tracking-wider">
-                      Perusahaan
+                      Company
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 uppercase tracking-wider">
-                      Posisi
+                      Position
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 uppercase tracking-wider">
                       Status
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 uppercase tracking-wider">
-                      Aksi
+                      Action
                     </th>
                   </tr>
                 </thead>
@@ -264,9 +265,9 @@ const JobApplicationList: React.FC = () => {
                               {getStatusIcon(app.status)}
                             </span>
                             {app.status === "accept"
-                              ? "Diterima"
+                              ? "Accepted"
                               : app.status === "reject"
-                              ? "Ditolak"
+                              ? "Rejected"
                               : "Pending"}
                           </span>
                           <select
@@ -289,7 +290,7 @@ const JobApplicationList: React.FC = () => {
                           disabled={loading}
                           className="text-red-400 hover:text-red-300 hover:bg-red-900/20 px-3 py-1 rounded transition-all duration-200 disabled:opacity-50"
                         >
-                          🗑️ Hapus
+                          🗑️ Delete
                         </button>
                       </td>
                     </tr>
@@ -317,7 +318,7 @@ const JobApplicationList: React.FC = () => {
                       disabled={loading}
                       className="text-red-400 hover:text-red-300 hover:bg-red-900/20 px-2 py-1 rounded text-xs transition-all duration-200 disabled:opacity-50"
                     >
-                      🗑️ Hapus
+                      🗑️ Delete
                     </button>
                   </div>
                   <div className="text-sm text-gray-300 mb-1">
@@ -331,9 +332,9 @@ const JobApplicationList: React.FC = () => {
                     >
                       <span className="mr-1">{getStatusIcon(app.status)}</span>
                       {app.status === "accept"
-                        ? "Diterima"
+                        ? "Accepted"
                         : app.status === "reject"
-                        ? "Ditolak"
+                        ? "Rejected"
                         : "Pending"}
                     </span>
                     <select
@@ -356,11 +357,10 @@ const JobApplicationList: React.FC = () => {
                 <div className="text-center py-12 px-4">
                   <div className="text-5xl mb-3">💼</div>
                   <h3 className="text-lg font-semibold text-gray-300 mb-1">
-                    Belum ada aplikasi pekerjaan
+                    No job applications yet
                   </h3>
                   <p className="text-gray-500 text-sm">
-                    Mulai tambahkan aplikasi pekerjaan Anda untuk melacak status
-                    lamaran.
+                    Start adding your job applications to track their status.
                   </p>
                 </div>
               )}
@@ -394,7 +394,7 @@ const JobApplicationList: React.FC = () => {
                     }
                   </div>
                   <div className="text-xs sm:text-sm text-gray-400">
-                    Diterima
+                    Accepted
                   </div>
                 </div>
               </div>
@@ -408,7 +408,7 @@ const JobApplicationList: React.FC = () => {
                     }
                   </div>
                   <div className="text-xs sm:text-sm text-gray-400">
-                    Ditolak
+                    Rejected
                   </div>
                 </div>
               </div>

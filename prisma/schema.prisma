@@ -39,6 +39,7 @@ model User {
   jobApplications JobApplication[]
   accounts      Account[]
   sessions      Session[]
+  notifications Notification[]
 }
 
 model Account {
@@ -73,4 +74,15 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  type      String? 
+  link      String? 
 }

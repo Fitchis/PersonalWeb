@@ -27,6 +27,22 @@ export const authOptions = {
     }),
   ],
   session: { strategy: "jwt" as const },
+  callbacks: {
+    async session({
+      session,
+      token,
+    }: {
+      session: import("next-auth").Session;
+      token: import("next-auth/jwt").JWT;
+    }) {
+      // For JWT strategy, id is on token
+      if (session.user && token?.sub) {
+        (session.user as { id?: string | undefined } & typeof session.user).id =
+          token.sub;
+      }
+      return session;
+    },
+  },
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",

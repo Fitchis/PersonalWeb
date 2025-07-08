@@ -6,12 +6,13 @@ const MusicPlayer = dynamic(() => import("../components/MusicPlayer"), {
 });
 import TodoList from "../components/TodoList";
 import JobApplicationList from "../components/JobApplicationList";
-import AuthButton from "../components/AuthButton";
+import Navbar from "../components/Navbar";
+import Header from "../components/Header";
 import { RequireAuth } from "../components/RequireAuth";
 import MotivationalQuoteWidget from "../components/MotivationalQuoteWidget";
 import MiniCalendarWidget from "../components/MiniCalendarWidget";
 import StatsSection from "../components/StatsSection";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 
 export default function Home() {
   const scrollToSection = (sectionId: string) => {
@@ -34,73 +35,11 @@ export default function Home() {
       </div>
 
       {/* Navbar */}
-      <nav className="w-full bg-black/80 border-b border-gray-800/50 shadow-2xl sticky top-0 z-50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-y-2">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-lg border border-gray-600">
-              <span className="text-white font-bold text-sm">D</span>
-            </div>
-            <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent select-none">
-              Dashboard
-            </span>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-6 w-full sm:w-auto justify-end">
-            <button
-              onClick={() => scrollToSection("todo")}
-              className="text-gray-400 hover:text-white font-medium transition-all duration-200 hover:scale-105 transform text-xs sm:text-base px-2 sm:px-0 relative group"
-            >
-              Todo
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-400 transition-all duration-200 group-hover:w-full"></span>
-            </button>
-            <button
-              onClick={() => scrollToSection("job")}
-              className="text-gray-400 hover:text-white font-medium transition-all duration-200 hover:scale-105 transform text-xs sm:text-base px-2 sm:px-0 relative group"
-            >
-              Job
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-400 transition-all duration-200 group-hover:w-full"></span>
-            </button>
-            <a
-              href="/profile"
-              className="text-gray-400 hover:text-white font-medium transition-all duration-200 hover:scale-105 transform text-xs sm:text-base px-2 sm:px-0 relative group"
-            >
-              Profil
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-400 transition-all duration-200 group-hover:w-full"></span>
-            </a>
-            <div className="ml-auto sm:ml-0">
-              <AuthButton />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar scrollToSection={scrollToSection} />
 
       <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
         {/* Header */}
-        <header className="text-center mb-16 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-800/20 via-gray-700/20 to-gray-600/20 rounded-3xl blur-3xl -z-10"></div>
-          <div className="relative">
-            <h1 className="text-5xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-200 via-white to-gray-300 bg-clip-text text-transparent">
-              Personal Dashboard
-            </h1>
-            <div className="w-24 h-1 bg-gradient-to-r from-gray-600 to-gray-400 mx-auto mb-6 rounded-full"></div>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              Manage your tasks and track your job applications all in one place
-            </p>
-          </div>
-          <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-            <button
-              onClick={() => scrollToSection("widgets")}
-              className="px-8 py-4 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-200 shadow-lg hover:shadow-2xl transform hover:scale-105 border border-gray-600"
-            >
-              Get Started
-            </button>
-            <button
-              onClick={() => scrollToSection("todo")}
-              className="px-8 py-4 bg-gray-900/60 text-white rounded-xl font-semibold hover:bg-gray-800/80 border border-gray-700 hover:border-gray-600 transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm"
-            >
-              View Tasks
-            </button>
-          </div>
-        </header>
+        <Header scrollToSection={scrollToSection} />
 
         {/* Motivational Quote & Mini Calendar Widgets */}
         <section id="widgets" className="mb-16">
@@ -110,12 +49,17 @@ export default function Home() {
               Quick Insights
             </h2>
           </div>
-          <div className="flex flex-col gap-6 max-w-2xl mx-auto sm:grid sm:grid-cols-2 sm:gap-6">
-            <div className="transform hover:scale-105 transition-transform duration-200 w-full">
-              <MotivationalQuoteWidget />
-            </div>
-            <div className="transform hover:scale-105 transition-transform duration-200 w-full">
-              <MiniCalendarWidget />
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="rounded-xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-4 flex flex-col h-full shadow-lg border border-gray-700 min-h-[180px]">
+                <MotivationalQuoteWidget />
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-4 flex flex-col h-full shadow-lg border border-gray-700 min-h-[180px]">
+                <MiniCalendarWidget />
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-4 flex flex-col h-full shadow-lg border border-gray-700 min-h-[180px]">
+                <MusicPlayer />
+              </div>
             </div>
           </div>
         </section>
@@ -129,7 +73,7 @@ export default function Home() {
               Task Management
             </div>
           </div>
-          <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:border-gray-600/70 hover:bg-gray-800/70">
+          <div>
             <RequireAuth>
               <TodoList />
             </RequireAuth>
@@ -141,13 +85,13 @@ export default function Home() {
           <div className="flex items-center mb-8">
             <div className="text-3xl mr-4">💼</div>
             <h2 className="text-3xl font-semibold text-white">
-              Lamaran Pekerjaan
+              Job Applications
             </h2>
             <div className="ml-4 px-3 py-1 bg-gray-700/40 text-gray-300 rounded-full text-sm font-medium border border-gray-600">
               Career Tracking
             </div>
           </div>
-          <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:border-gray-600/70 hover:bg-gray-800/70">
+          <div>
             <RequireAuth>
               <JobApplicationList />
             </RequireAuth>
@@ -163,11 +107,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* Footer */}
-        <Footer />
-        {/* Music Player */}
-        <MusicPlayer />
       </div>
 
       {/* Floating Elements */}

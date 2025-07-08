@@ -149,22 +149,27 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json(updated);
 }
 
-// Delete todo (hanya milik user login)
+// Delete todo (single/multiple, hanya milik user login)
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const { id } = await req.json();
+  const body = await req.json();
+  const ids: number[] = body.ids || (body.id !== undefined ? [body.id] : []);
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return NextResponse.json({ error: "No id(s) provided" }, { status: 400 });
+  }
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
   });
   if (!user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const todo = await prisma.todo.findUnique({ where: { id } });
-  if (!todo || todo.userId !== user.id) {
+  // Validasi semua todo milik user
+  const todos = await prisma.todo.findMany({ where: { id: { in: ids } } });
+  if (todos.some((t) => t.userId !== user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  await prisma.todo.delete({ where: { id } });
+  await prisma.todo.deleteMany({ where: { id: { in: ids } } });
   return NextResponse.json({ success: true });
 }
