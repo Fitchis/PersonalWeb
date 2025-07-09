@@ -1,6 +1,6 @@
-# Personal Web Dashboard - Next.js, Prisma, NextAuth
+# Personal Web Dashboard - Next.js, Prisma, NextAuth, Gemini AI
 
-Dashboard modern dengan tema dark, autentikasi custom, Todo List, dan Job Application tracker per user.
+Dashboard modern dengan tema dark, autentikasi custom, Todo List, Job Application tracker, dan AI Chat Widget (Gemini AI).
 
 ## Fitur Utama
 
@@ -10,11 +10,16 @@ Dashboard modern dengan tema dark, autentikasi custom, Todo List, dan Job Applic
 - **Proteksi akses** (RequireAuth)
 - **Edit profil** (nama & password, tanpa gambar)
 - **Notifikasi Toast** di semua aksi utama
-- **Widget Motivational Quote** & **Mini Calendar**
+- **Widget Motivational Quote**, **Mini Calendar** & **PomodoroTimer**
 - **Stats Section** real-time (productivity, streak, breakdown)
-- **UI/UX dark modern**: responsif, animasi, grid, sticky navbar, minimalis footer
+- **AI Chat Widget** (Gemini AI, OpenAI-ready):
+  - Floating chat widget, modern & responsif
+  - Pilihan topik (Productivity, Coding Help, Career Advice, General Chat)
+  - Reset/New Topic, auto-scroll, typing indicator
+  - Gemini AI backend (gratis), bisa diubah ke OpenAI
+  - UI/UX polished, desktop & mobile friendly
 
-## Cara Menjalankan
+## Cara Menjalankan & Deploy
 
 1. **Install dependencies:**
    ```bash
@@ -29,11 +34,22 @@ Dashboard modern dengan tema dark, autentikasi custom, Todo List, dan Job Applic
      npx prisma migrate dev --name init
      npx prisma generate
      ```
-3. **Jalankan development server:**
+3. **Setup environment variables:**
+   - Buat file `.env` dan isi:
+     ```env
+     DATABASE_URL=...
+     NEXTAUTH_URL=...
+     NEXTAUTH_SECRET=...
+     RESEND_API_KEY=...
+     GEMINI_API_KEY=...
+     ```
+   - Untuk deploy di Vercel, tambahkan semua variabel di dashboard Vercel > Project > Settings > Environment Variables
+
+4. **Jalankan development server:**
    ```bash
    npm run dev
    ```
-4. **Akses di browser:**
+5. **Akses di browser:**
    [http://localhost:3000](http://localhost:3000)
 
 ## Struktur Fitur
@@ -48,6 +64,8 @@ Dashboard modern dengan tema dark, autentikasi custom, Todo List, dan Job Applic
   - Motivational Quote, Mini Calendar
 - **Stats Section:**
   - Real-time, productivity, streak, breakdown
+- **AI Chat Widget:**
+  - Floating, topik, reset, auto-scroll, typing indicator, Gemini AI backend
 
 ## Teknologi
 
@@ -57,6 +75,8 @@ Dashboard modern dengan tema dark, autentikasi custom, Todo List, dan Job Applic
 - bcryptjs (hash password)
 - TailwindCSS (dark theme, animasi, grid)
 - @hello-pangea/dnd (drag & drop)
+- Gemini AI API (Google Generative Language)
+- Resend (email API)
 
 ## Catatan
 
@@ -64,7 +84,8 @@ Dashboard modern dengan tema dark, autentikasi custom, Todo List, dan Job Applic
 - Semua aksi utama ada notifikasi Toast
 - Sudah dioptimalkan untuk mobile & desktop
 - Script `postinstall` otomatis generate Prisma Client (untuk deploy Vercel)
+- Untuk AI Chat, kunci API tidak boleh di-commit, harus diatur di .env & Vercel
 
 ---
 
-> Dibuat untuk latihan Next.js, Prisma, dan UI/UX modern. Silakan fork/clone & kembangkan sesuai kebutuhan!
+---
