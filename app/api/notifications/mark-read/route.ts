@@ -6,7 +6,6 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
-  // @ts-expect-error - id is injected in session.user by session callback
   const userId = session?.user?.id;
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,14 +13,20 @@ export async function POST(req: NextRequest) {
 
   const { notificationId } = await req.json();
   if (!notificationId) {
-    return NextResponse.json({ error: "Missing notificationId" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing notificationId" },
+      { status: 400 }
+    );
   }
 
   const notif = await prisma.notification.findFirst({
     where: { id: notificationId, userId },
   });
   if (!notif) {
-    return NextResponse.json({ error: "Notification not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Notification not found" },
+      { status: 404 }
+    );
   }
 
   await prisma.notification.update({
