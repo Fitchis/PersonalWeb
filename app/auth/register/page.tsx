@@ -27,9 +27,9 @@ export default function RegisterPage() {
     setIsLoading(false);
 
     if (!res.ok) {
-      setError(data.error || "Gagal register");
+      setError(data.error || "Registration failed");
     } else {
-      setSuccess("Register berhasil! Silakan login.");
+      setSuccess("Registration successful! Please sign in.");
       setTimeout(() => router.push("/auth/signin"), 1500);
     }
   };

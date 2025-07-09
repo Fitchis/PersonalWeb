@@ -7,7 +7,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   if (status === "unauthenticated")
     return (
       <div className="text-center text-lg text-red-400">
-        Silakan login untuk mengakses fitur ini.
+        Please log in to access this feature.
       </div>
     );
   return <>{children}</>;

@@ -1,20 +1,59 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import TodoList from "../components/todo/TodoList";
+import JobApplicationList from "../components/job/JobApplicationList";
+import Navbar from "../components/layout/Navbar";
+import Header from "../components/layout/Header";
+import { RequireAuth } from "../components/RequireAuth";
+import DashboardWidgets from "../components/widgets/DashboardWidgets";
+import WidgetSettingsPanel from "../components/widgets/WidgetSettingsPanel";
+import StatsSection from "../components/stats/StatsSection";
+
 import dynamic from "next/dynamic";
-const MusicPlayer = dynamic(() => import("../components/MusicPlayer"), {
+const AIChatWidget = dynamic(() => import("../components/AIChatWidget"), {
   ssr: false,
 });
-import TodoList from "../components/TodoList";
-import JobApplicationList from "../components/JobApplicationList";
-import Navbar from "../components/Navbar";
-import Header from "../components/Header";
-import { RequireAuth } from "../components/RequireAuth";
-import MotivationalQuoteWidget from "../components/MotivationalQuoteWidget";
-import MiniCalendarWidget from "../components/MiniCalendarWidget";
-import StatsSection from "../components/StatsSection";
-// import Footer from "@/components/Footer";
+import { Gamepad } from "lucide-react";
 
 export default function Home() {
+  // Widget customization state
+  const [showCustomize, setShowCustomize] = useState(false);
+  const [widgetPrefs, setWidgetPrefs] = useState({
+    quote: true,
+    calendar: true,
+    music: true,
+    pomodoro: true,
+  });
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Load preferences from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("dashboardWidgetPrefs");
+      if (saved) {
+        // Add pomodoro default if missing (for backward compatibility)
+        const parsed = JSON.parse(saved);
+        setWidgetPrefs({
+          quote: parsed.quote !== undefined ? parsed.quote : true,
+          calendar: parsed.calendar !== undefined ? parsed.calendar : true,
+          music: parsed.music !== undefined ? parsed.music : true,
+          pomodoro: parsed.pomodoro !== undefined ? parsed.pomodoro : true,
+        });
+      }
+    }
+  }, []);
+
+  // Save preferences to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dashboardWidgetPrefs", JSON.stringify(widgetPrefs));
+    }
+  }, [widgetPrefs]);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -41,26 +80,36 @@ export default function Home() {
         {/* Header */}
         <Header scrollToSection={scrollToSection} />
 
-        {/* Motivational Quote & Mini Calendar Widgets */}
-        <section id="widgets" className="mb-16">
-          <div className="flex items-center justify-center mb-8">
-            <div className="text-3xl mr-4">✨</div>
-            <h2 className="text-3xl font-semibold text-white">
-              Quick Insights
-            </h2>
-          </div>
+        {/*  Widgets */}
+        <section id="widgets" className="mb-12">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="rounded-xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-4 flex flex-col h-full shadow-lg border border-gray-700 min-h-[180px]">
-                <MotivationalQuoteWidget />
+            {/* Inline Header */}
+            <div className="flex items-center justify-between mb-6 px-2">
+              <div className="flex items-center gap-2">
+                <Gamepad className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-xl font-semibold text-gray-200">Widgets</h2>
               </div>
-              <div className="rounded-xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-4 flex flex-col h-full shadow-lg border border-gray-700 min-h-[180px]">
-                <MiniCalendarWidget />
-              </div>
-              <div className="rounded-xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-4 flex flex-col h-full shadow-lg border border-gray-700 min-h-[180px]">
-                <MusicPlayer />
-              </div>
+
+              <button
+                className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-gray-200 rounded-md border border-gray-600 hover:border-indigo-500 transition-colors duration-200 text-sm flex items-center gap-1.5"
+                onClick={() => setShowCustomize((v) => !v)}
+              >
+                ⚙️ Settings
+              </button>
             </div>
+
+            {/* Slide-down Settings Panel */}
+            {hasMounted && (
+              <WidgetSettingsPanel
+                show={showCustomize}
+                onClose={() => setShowCustomize(false)}
+                widgetPrefs={widgetPrefs}
+                setWidgetPrefs={setWidgetPrefs}
+              />
+            )}
+
+            {/* Compact Widget Grid */}
+            {hasMounted && <DashboardWidgets widgetPrefs={widgetPrefs} />}
           </div>
         </section>
 
@@ -124,6 +173,7 @@ export default function Home() {
         style={{ animationDelay: "3s" }}
       ></div>
 
+      <AIChatWidget />
       <style jsx>{`
         @keyframes float {
           0%,

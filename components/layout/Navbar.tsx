@@ -1,10 +1,19 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, CheckSquare, Briefcase, User, Home } from "lucide-react";
+import {
+  Menu,
+  X,
+  CheckSquare,
+  Briefcase,
+  User,
+  Home,
+  Shield,
+} from "lucide-react";
 
-import AuthButton from "./AuthButton";
-import NotificationDropdown from "./NotificationDropdown";
+import AuthButton from "../AuthButton";
+import NotificationDropdown from "../NotificationDropdown";
+import { useSession } from "next-auth/react";
 
 interface NavbarProps {
   scrollToSection: (sectionId: string) => void;
@@ -12,6 +21,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ scrollToSection }) => {
   const [notificationCount, setNotificationCount] = useState(0);
+  const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -133,6 +143,19 @@ const Navbar: React.FC<NavbarProps> = ({ scrollToSection }) => {
                 <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-purple-400 transition-all duration-200 group-hover:w-full"></span>
               </Link>
 
+              {/* Admin link, only show if user is admin */}
+              {session?.user &&
+                (session.user as { role?: string }).role === "ADMIN" && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 text-blue-400 hover:text-white font-semibold px-3 py-1 rounded-lg transition-all duration-200 hover:scale-105 transform relative group border border-transparent hover:border-blue-400/40 hover:bg-blue-900/20 shadow-sm"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Admin
+                    <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-blue-400 transition-all duration-200 group-hover:w-full"></span>
+                  </Link>
+                )}
+
               {/* Notifications (only show if logged in) */}
               <NotificationDropdown
                 notificationCount={notificationCount}
@@ -181,6 +204,19 @@ const Navbar: React.FC<NavbarProps> = ({ scrollToSection }) => {
                 <User className="h-4 w-4" />
                 Profile
               </Link>
+
+              {/* Admin link, only show if user is admin */}
+              {session?.user &&
+                (session.user as { role?: string }).role === "ADMIN" && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-blue-400 hover:text-white hover:bg-gray-800/50 font-medium transition-all duration-200"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Link>
+                )}
 
               <div className="pt-3 border-t border-gray-800/50">
                 <AuthButton />

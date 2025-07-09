@@ -9,7 +9,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import Toast from "./Toast";
+import Toast from "../Toast";
 
 interface Todo {
   id: number;

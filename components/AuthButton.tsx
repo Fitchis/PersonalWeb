@@ -22,7 +22,6 @@ export default function AuthButton() {
     return (
       <div className="group relative flex items-center gap-2 sm:gap-4 bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-xl px-3 py-2 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border border-slate-700/50 shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:border-slate-600/70 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
         <div className="relative flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
           <div className="relative flex-shrink-0">
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Toast from "./Toast";
+import Toast from "../Toast";
 
 type Status = "accept" | "reject" | "pending";
 

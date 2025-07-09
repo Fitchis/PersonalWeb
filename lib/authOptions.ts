@@ -22,12 +22,33 @@ export const authOptions = {
           id: user.id,
           name: user.name,
           email: user.email,
+          role: user.role, // Include role
         };
       },
     }),
   ],
   session: { strategy: "jwt" as const },
   callbacks: {
+    async jwt({
+      token,
+      user,
+    }: {
+      token: import("next-auth/jwt").JWT;
+      user?: (
+        | import("next-auth").User
+        | import("next-auth/adapters").AdapterUser
+      ) & { role?: string };
+      account?: import("next-auth").Account | null;
+      profile?: import("next-auth").Profile;
+      isNewUser?: boolean;
+      trigger?: "signIn" | "signUp" | "update";
+      session?: import("next-auth").Session;
+    }) {
+      if (user && user.role) {
+        token.role = user.role;
+      }
+      return token;
+    },
     async session({
       session,
       token,
@@ -39,6 +60,12 @@ export const authOptions = {
       if (session.user && token?.sub) {
         (session.user as { id?: string | undefined } & typeof session.user).id =
           token.sub;
+      }
+      // Add role to session.user
+      if (session.user && token?.role) {
+        (
+          session.user as { role?: string | undefined } & typeof session.user
+        ).role = token.role as string;
       }
       return session;
     },

@@ -37,11 +37,11 @@ export default function SignInPage() {
     setIsLoading(false);
 
     if (res?.error) {
-      setError("Email atau password salah");
-      setToast({ message: "Email atau password salah", type: "error" });
+      setError("Email or password is incorrect");
+      setToast({ message: "Email or password is incorrect", type: "error" });
     }
     if (res?.ok) {
-      setToast({ message: "Login berhasil!", type: "success" });
+      setToast({ message: "Login Completed!", type: "success" });
       setTimeout(() => router.push("/"), 1000);
     }
   };

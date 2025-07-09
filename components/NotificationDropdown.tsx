@@ -84,8 +84,24 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       </button>
       {showDropdown && (
         <div className="absolute right-0 mt-2 w-80 max-w-xs bg-gray-900 border border-gray-700 rounded-lg shadow-2xl z-50 animate-fade-in overflow-hidden">
-          <div className="p-3 border-b border-gray-800 font-semibold text-gray-200 bg-gray-950/80">
-            Notifications
+          <div className="p-3 border-b border-gray-800 font-semibold text-gray-200 bg-gray-950/80 flex justify-between items-center">
+            <span>Notifications</span>
+            <div className="flex gap-2">
+              <button
+                className="text-xs px-2 py-1 bg-blue-700 hover:bg-blue-800 rounded text-white"
+                onClick={async () => {
+                  await fetch("/api/notifications/mark-all-read", {
+                    method: "POST",
+                  });
+                  setNotifications((prev) =>
+                    prev.map((n) => ({ ...n, read: true }))
+                  );
+                  setNotificationCount(0);
+                }}
+              >
+                Mark all as read
+              </button>
+            </div>
           </div>
           <ul className="max-h-80 overflow-y-auto divide-y divide-gray-800">
             {notifications.length === 0 ? (
@@ -149,26 +165,51 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                         {new Date(notif.createdAt).toLocaleString()}
                       </span>
                     </div>
-                    {!notif.read && (
+                    <div className="flex flex-col gap-1">
+                      {!notif.read && (
+                        <button
+                          className="ml-2 px-2 py-1 text-xs rounded bg-blue-700 hover:bg-blue-800 text-white transition"
+                          onClick={async () => {
+                            await fetch("/api/notifications/mark-read", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                notificationId: notif.id,
+                              }),
+                            });
+                            setNotifications((prev) =>
+                              prev.map((n) =>
+                                n.id === notif.id ? { ...n, read: true } : n
+                              )
+                            );
+                            setNotificationCount((prev) =>
+                              Math.max(0, prev - 1)
+                            );
+                          }}
+                        >
+                          Mark as read
+                        </button>
+                      )}
                       <button
-                        className="ml-2 px-2 py-1 text-xs rounded bg-blue-700 hover:bg-blue-800 text-white transition"
+                        className="ml-2 px-2 py-1 text-xs rounded bg-red-700 hover:bg-red-800 text-white transition"
                         onClick={async () => {
-                          await fetch("/api/notifications/mark-read", {
+                          await fetch("/api/notifications/delete", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ notificationId: notif.id }),
                           });
                           setNotifications((prev) =>
-                            prev.map((n) =>
-                              n.id === notif.id ? { ...n, read: true } : n
-                            )
+                            prev.filter((n) => n.id !== notif.id)
                           );
-                          setNotificationCount((prev) => Math.max(0, prev - 1));
+                          if (!notif.read)
+                            setNotificationCount((prev) =>
+                              Math.max(0, prev - 1)
+                            );
                         }}
                       >
-                        Mark as read
+                        Delete
                       </button>
-                    )}
+                    </div>
                   </li>
                 );
               })
