@@ -120,7 +120,7 @@ export default function Header({
 
         {/* Main title */}
         <h1 className="text-5xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-pulse">
-          Personal Dashboard
+          Task2Work
         </h1>
 
         {/* Decorative line */}

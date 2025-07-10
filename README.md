@@ -1,4 +1,4 @@
-# Personal Web Dashboard - Next.js, Prisma, NextAuth, Gemini AI
+# Task2Work - Next.js, Prisma, NextAuth, Gemini AI
 
 Dashboard modern dengan tema dark, autentikasi custom, Todo List, Job Application tracker, dan AI Chat Widget (Gemini AI).
 
@@ -19,38 +19,7 @@ Dashboard modern dengan tema dark, autentikasi custom, Todo List, Job Applicatio
   - Gemini AI backend (gratis), bisa diubah ke OpenAI
   - UI/UX polished, desktop & mobile friendly
 
-## Cara Menjalankan & Deploy
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   # atau
-   yarn install
-   ```
-2. **Setup database:**
-   - Edit `prisma/schema.prisma` jika perlu
-   - Jalankan migrasi & generate Prisma Client:
-     ```bash
-     npx prisma migrate dev --name init
-     npx prisma generate
-     ```
-3. **Setup environment variables:**
-   - Buat file `.env` dan isi:
-     ```env
-     DATABASE_URL=...
-     NEXTAUTH_URL=...
-     NEXTAUTH_SECRET=...
-     RESEND_API_KEY=...
-     GEMINI_API_KEY=...
-     ```
-   - Untuk deploy di Vercel, tambahkan semua variabel di dashboard Vercel > Project > Settings > Environment Variables
-
-4. **Jalankan development server:**
-   ```bash
-   npm run dev
-   ```
-5. **Akses di browser:**
-   [http://localhost:3000](http://localhost:3000)
+---
 
 ## Struktur Fitur
 
@@ -77,14 +46,6 @@ Dashboard modern dengan tema dark, autentikasi custom, Todo List, Job Applicatio
 - @hello-pangea/dnd (drag & drop)
 - Gemini AI API (Google Generative Language)
 - Resend (email API)
-
-## Catatan
-
-- Tidak ada fitur upload/preview gambar profil
-- Semua aksi utama ada notifikasi Toast
-- Sudah dioptimalkan untuk mobile & desktop
-- Script `postinstall` otomatis generate Prisma Client (untuk deploy Vercel)
-- Untuk AI Chat, kunci API tidak boleh di-commit, harus diatur di .env & Vercel
 
 ---
 

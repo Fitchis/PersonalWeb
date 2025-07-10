@@ -92,10 +92,10 @@ const Navbar: React.FC<NavbarProps> = ({ scrollToSection }) => {
             {/* Logo (center on mobile, left on desktop) */}
             <div className="flex-1 flex items-center justify-center md:justify-start gap-2 sm:gap-3 group cursor-pointer absolute left-1/2 top-1/2 md:static md:left-0 md:top-0 -translate-x-1/2 md:translate-x-0 -translate-y-1/2 md:translate-y-0">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg border border-blue-500/50 group-hover:scale-110 transition-transform duration-200">
-                <span className="text-white font-bold text-sm">D</span>
+                <span className="text-white font-bold text-sm">T2W</span>
               </div>
               <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent select-none">
-                Dashboard
+                Task2Work
               </span>
             </div>
 
