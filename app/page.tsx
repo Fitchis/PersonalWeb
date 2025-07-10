@@ -8,7 +8,7 @@ import { RequireAuth } from "../components/RequireAuth";
 import DashboardWidgets from "../components/widgets/DashboardWidgets";
 import WidgetSettingsPanel from "../components/widgets/WidgetSettingsPanel";
 import StatsSection from "../components/stats/StatsSection";
-
+import HowToUsePopup from "@/components/HowToUsePopup";
 import dynamic from "next/dynamic";
 const AIChatWidget = dynamic(() => import("../components/AIChatWidget"), {
   ssr: false,
@@ -63,6 +63,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* How to Use Popup */}
+      <HowToUsePopup localStorageKey="howToUsePopupDismissed" />
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(156,163,175,0.1),transparent_50%)]"></div>

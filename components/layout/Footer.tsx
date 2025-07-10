@@ -74,13 +74,13 @@ function Footer() {
               <div className="flex items-center gap-3 group">
                 <div className="relative">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-blue-500/25 transition-all duration-300 group-hover:scale-110">
-                    <span className="font-bold text-white">D</span>
+                    <span className="font-bold text-white">T2W</span>
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div>
                   <span className="text-slate-200 font-bold text-lg block">
-                    Personal Dashboard
+                    Task2Work
                   </span>
                   <span className="text-slate-400 text-sm">
                     Productivity made simple
