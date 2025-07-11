@@ -20,6 +20,7 @@ function urlBase64ToUint8Array(base64String: string) {
 export default function PushNotificationButton() {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -32,23 +33,33 @@ export default function PushNotificationButton() {
 
   async function subscribe() {
     setLoading(true);
-    if ("serviceWorker" in navigator) {
-      const reg = await navigator.serviceWorker.ready;
-      let sub = await reg.pushManager.getSubscription();
-      if (!sub) {
-        sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    setError(null);
+    try {
+      if ("serviceWorker" in navigator) {
+        const reg = await navigator.serviceWorker.ready;
+        let sub = await reg.pushManager.getSubscription();
+        if (!sub) {
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+          });
+        }
+        await fetch("/api/push", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "subscribe", subscription: sub }),
         });
+        setSubscribed(true);
       }
-      await fetch("/api/push", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "subscribe", subscription: sub }),
-      });
-      setSubscribed(true);
+    } catch (err) {
+      setError(
+        "Gagal subscribe: " +
+          (err instanceof Error ? err.message : "Unknown error")
+      );
+      console.error("Failed to subscribe:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function sendTestNotification() {
@@ -65,6 +76,7 @@ export default function PushNotificationButton() {
 
   return (
     <div style={{ margin: "1rem 0" }}>
+      {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
       <button onClick={subscribe} disabled={subscribed || loading}>
         {subscribed
           ? "Subscribed to Push"
