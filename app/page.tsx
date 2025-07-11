@@ -4,6 +4,7 @@ import TodoList from "../components/todo/TodoList";
 import JobApplicationList from "../components/job/JobApplicationList";
 import Navbar from "../components/layout/Navbar";
 import Header from "../components/layout/Header";
+import PushNotificationButton from "../components/PushNotificationButton";
 import { RequireAuth } from "../components/RequireAuth";
 import DashboardWidgets from "../components/widgets/DashboardWidgets";
 import WidgetSettingsPanel from "../components/widgets/WidgetSettingsPanel";
@@ -175,6 +176,7 @@ export default function Home() {
         style={{ animationDelay: "3s" }}
       ></div>
 
+      <PushNotificationButton />
       <AIChatWidget />
       <style jsx>{`
         @keyframes float {

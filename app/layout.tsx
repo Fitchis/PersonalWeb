@@ -20,8 +20,6 @@ export const metadata: Metadata = {
   title: "Task2Work",
   description: "A personal web app for managing your tasks efficiently.",
 };
-import PushNotificationButton from "../components/PushNotificationButton";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,7 +33,6 @@ export default function RootLayout({
       >
         <AuthProvider>
           <RegisterServiceWorker />
-          <PushNotificationButton />
           {children}
           <Footer />
         </AuthProvider>
