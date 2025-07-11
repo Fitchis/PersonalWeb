@@ -35,28 +35,49 @@ export default function PushNotificationButton() {
     setLoading(true);
     setError(null);
     try {
-      if ("serviceWorker" in navigator) {
-        const reg = await navigator.serviceWorker.ready;
-        let sub = await reg.pushManager.getSubscription();
-        if (!sub) {
+      if (!("serviceWorker" in navigator)) {
+        throw new Error("Service worker not supported in this browser.");
+      }
+      const reg = await navigator.serviceWorker.ready;
+      console.log("Service worker ready:", reg);
+      let sub = await reg.pushManager.getSubscription();
+      console.log("Existing subscription:", sub);
+      if (!sub) {
+        try {
           sub = await reg.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
           });
+          console.log("New subscription:", sub);
+        } catch (err) {
+          console.error("pushManager.subscribe error:", err);
+          throw new Error(
+            "pushManager.subscribe failed: " +
+              (err instanceof Error ? err.message : String(err))
+          );
         }
-        const response = await fetch("/api/push", {
+      }
+      let response;
+      try {
+        response = await fetch("/api/push", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ type: "subscribe", subscription: sub }),
         });
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error("API error: " + errorText);
-        }
-        setSubscribed(true);
-      } else {
-        throw new Error("Service worker not supported in this browser.");
+        console.log("API response:", response);
+      } catch (err) {
+        console.error("fetch /api/push error:", err);
+        throw new Error(
+          "fetch /api/push failed: " +
+            (err instanceof Error ? err.message : String(err))
+        );
       }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API error text:", errorText);
+        throw new Error("API error: " + errorText);
+      }
+      setSubscribed(true);
     } catch (error) {
       setError(
         "Gagal subscribe: " +
