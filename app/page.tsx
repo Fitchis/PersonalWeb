@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import TodoList from "../components/todo/TodoList";
 import JobApplicationList from "../components/job/JobApplicationList";
 import Navbar from "../components/layout/Navbar";
@@ -16,6 +17,7 @@ const AIChatWidget = dynamic(() => import("../components/AIChatWidget"), {
 import { Gamepad } from "lucide-react";
 
 export default function Home() {
+  const { status } = useSession();
   // Widget customization state
   const [showCustomize, setShowCustomize] = useState(false);
   const [widgetPrefs, setWidgetPrefs] = useState({
@@ -92,12 +94,14 @@ export default function Home() {
                 <h2 className="text-xl font-semibold text-gray-200">Widgets</h2>
               </div>
 
-              <button
-                className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-gray-200 rounded-md border border-gray-600 hover:border-indigo-500 transition-colors duration-200 text-sm flex items-center gap-1.5"
-                onClick={() => setShowCustomize((v) => !v)}
-              >
-                ⚙️ Settings
-              </button>
+              {status === "authenticated" && (
+                <button
+                  className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-gray-200 rounded-md border border-gray-600 hover:border-indigo-500 transition-colors duration-200 text-sm flex items-center gap-1.5"
+                  onClick={() => setShowCustomize((v) => !v)}
+                >
+                  ⚙️ Settings
+                </button>
+              )}
             </div>
 
             {/* Slide-down Settings Panel */}
@@ -125,7 +129,22 @@ export default function Home() {
             </div>
           </div>
           <div>
-            <RequireAuth>
+            <RequireAuth
+              preview={
+                <div className="rounded-xl bg-gray-800/60 border border-gray-700 p-6 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
+                  <div className="w-full h-8 bg-gray-700/60 rounded mb-2 animate-pulse" />
+                  <div className="w-3/4 h-4 bg-gray-700/40 rounded mb-2 animate-pulse" />
+                  <div className="w-1/2 h-4 bg-gray-700/30 rounded mb-4 animate-pulse" />
+                  <div className="text-gray-400 text-center text-sm">
+                    Please log in to manage and view your todo list.
+                    <br />
+                    <span className="italic text-gray-500">
+                      (Feature preview: tasks, deadlines, drag & drop, and more)
+                    </span>
+                  </div>
+                </div>
+              }
+            >
               <TodoList />
             </RequireAuth>
           </div>
@@ -143,7 +162,22 @@ export default function Home() {
             </div>
           </div>
           <div>
-            <RequireAuth>
+            <RequireAuth
+              preview={
+                <div className="rounded-xl bg-gray-800/60 border border-gray-700 p-6 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
+                  <div className="w-full h-8 bg-gray-700/60 rounded mb-2 animate-pulse" />
+                  <div className="w-3/4 h-4 bg-gray-700/40 rounded mb-2 animate-pulse" />
+                  <div className="w-1/2 h-4 bg-gray-700/30 rounded mb-4 animate-pulse" />
+                  <div className="text-gray-400 text-center text-sm">
+                    Please log in to view and track your job applications.
+                    <br />
+                    <span className="italic text-gray-500">
+                      (Feature preview: application status, notes, and more)
+                    </span>
+                  </div>
+                </div>
+              }
+            >
               <JobApplicationList />
             </RequireAuth>
           </div>
