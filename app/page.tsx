@@ -29,6 +29,17 @@ export default function Home() {
 
   useEffect(() => {
     setHasMounted(true);
+    // Register service worker jika belum
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => {
+          console.log("Service worker registered:", reg);
+        })
+        .catch((err) => {
+          console.error("Service worker registration failed:", err);
+        });
+    }
   }, []);
 
   // Load preferences from localStorage
