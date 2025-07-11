@@ -4,7 +4,6 @@ import TodoList from "../components/todo/TodoList";
 import JobApplicationList from "../components/job/JobApplicationList";
 import Navbar from "../components/layout/Navbar";
 import Header from "../components/layout/Header";
-import PushNotificationButton from "../components/PushNotificationButton";
 import { RequireAuth } from "../components/RequireAuth";
 import DashboardWidgets from "../components/widgets/DashboardWidgets";
 import WidgetSettingsPanel from "../components/widgets/WidgetSettingsPanel";
@@ -29,17 +28,6 @@ export default function Home() {
 
   useEffect(() => {
     setHasMounted(true);
-    // Register service worker jika belum
-    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((reg) => {
-          console.log("Service worker registered:", reg);
-        })
-        .catch((err) => {
-          console.error("Service worker registration failed:", err);
-        });
-    }
   }, []);
 
   // Load preferences from localStorage
@@ -91,9 +79,6 @@ export default function Home() {
       <Navbar scrollToSection={scrollToSection} />
 
       <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        <RequireAuth>
-          <PushNotificationButton />
-        </RequireAuth>
         {/* Header */}
         <Header scrollToSection={scrollToSection} />
 
