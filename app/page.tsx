@@ -188,7 +188,24 @@ export default function Home() {
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-gray-800/10 via-gray-700/10 to-gray-600/10 rounded-3xl blur-2xl"></div>
             <div className="relative">
-              <StatsSection />
+              <RequireAuth
+                preview={
+                  <div className="rounded-xl bg-gray-800/60 border border-gray-700 p-6 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
+                    <div className="w-full h-8 bg-gray-700/60 rounded mb-2 animate-pulse" />
+                    <div className="w-3/4 h-4 bg-gray-700/40 rounded mb-2 animate-pulse" />
+                    <div className="w-1/2 h-4 bg-gray-700/30 rounded mb-4 animate-pulse" />
+                    <div className="text-gray-400 text-center text-sm">
+                      Please log in to view your statistics.
+                      <br />
+                      <span className="italic text-gray-500">
+                        (Feature preview: productivity stats, charts, and more)
+                      </span>
+                    </div>
+                  </div>
+                }
+              >
+                <StatsSection />
+              </RequireAuth>
             </div>
           </div>
         </section>
