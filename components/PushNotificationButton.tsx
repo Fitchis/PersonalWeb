@@ -1,5 +1,5 @@
-// This file handles push notification subscription and triggering from the client.
-// Place this in your components directory, e.g., components/PushNotificationButton.tsx
+// PushNotificationButton.tsx
+// Komponen untuk subscribe dan test push notification
 
 "use client";
 import { useEffect, useState } from "react";
@@ -44,34 +44,52 @@ export default function PushNotificationButton() {
             applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
           });
         }
-        await fetch("/api/push", {
+        const response = await fetch("/api/push", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ type: "subscribe", subscription: sub }),
         });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error("API error: " + errorText);
+        }
         setSubscribed(true);
+      } else {
+        throw new Error("Service worker not supported in this browser.");
       }
-    } catch (err) {
+    } catch (error) {
       setError(
         "Gagal subscribe: " +
-          (err instanceof Error ? err.message : "Unknown error")
+          (error instanceof Error ? error.message : "Unknown error")
       );
-      console.error("Failed to subscribe:", err);
+      console.error("Failed to subscribe:", error);
     } finally {
       setLoading(false);
     }
   }
 
   async function sendTestNotification() {
-    await fetch("/api/push", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "notify",
-        title: "Test Notification",
-        body: "Push notification works!",
-      }),
-    });
+    try {
+      const response = await fetch("/api/push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "notify",
+          title: "Test Notification",
+          body: "Push notification works!",
+        }),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        setError("Gagal kirim notifikasi: " + errorText);
+      }
+    } catch (error) {
+      setError(
+        "Gagal kirim notifikasi: " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
+      console.error("Failed to send notification:", error);
+    }
   }
 
   return (
