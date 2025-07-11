@@ -80,6 +80,9 @@ export default function Home() {
       <Navbar scrollToSection={scrollToSection} />
 
       <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+        <RequireAuth>
+          <PushNotificationButton />
+        </RequireAuth>
         {/* Header */}
         <Header scrollToSection={scrollToSection} />
 
@@ -176,7 +179,6 @@ export default function Home() {
         style={{ animationDelay: "3s" }}
       ></div>
 
-      <PushNotificationButton />
       <AIChatWidget />
       <style jsx>{`
         @keyframes float {
