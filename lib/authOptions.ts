@@ -1,8 +1,11 @@
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
 
 export const authOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,7 +18,7 @@ export const authOptions = {
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-        if (!user) return null;
+        if (!user || !user.password) return null; // Only allow credentials login for user with password
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
         return {
@@ -26,28 +29,22 @@ export const authOptions = {
         };
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
   ],
   session: { strategy: "jwt" as const },
   callbacks: {
-    async jwt({
-      token,
-      user,
-    }: {
-      token: import("next-auth/jwt").JWT;
-      user?: (
-        | import("next-auth").User
-        | import("next-auth/adapters").AdapterUser
-      ) & { role?: string };
-      account?: import("next-auth").Account | null;
-      profile?: import("next-auth").Profile;
-      isNewUser?: boolean;
-      trigger?: "signIn" | "signUp" | "update";
-      session?: import("next-auth").Session;
-    }) {
-      if (user && user.role) {
-        token.role = user.role;
+    async jwt({ token, user }: { token: unknown; user?: unknown }) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const t = token as Record<string, any>;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const u = user as Record<string, any>;
+      if (u && u.role) {
+        t.role = u.role;
       }
-      return token;
+      return t;
     },
     async session({
       session,
@@ -56,16 +53,12 @@ export const authOptions = {
       session: import("next-auth").Session;
       token: import("next-auth/jwt").JWT;
     }) {
-      // For JWT strategy, id is on token
+      // Only add id and role, preserve all original session fields (including expires)
       if (session.user && token?.sub) {
-        (session.user as { id?: string | undefined } & typeof session.user).id =
-          token.sub;
+        (session.user as { id?: string }).id = token.sub;
       }
-      // Add role to session.user
       if (session.user && token?.role) {
-        (
-          session.user as { role?: string | undefined } & typeof session.user
-        ).role = token.role as string;
+        (session.user as { role?: string }).role = token.role as string;
       }
       return session;
     },
@@ -73,5 +66,25 @@ export const authOptions = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
+  },
+  events: {
+    async signIn({
+      user,
+      account,
+    }: {
+      user: import("next-auth").User;
+      account: import("next-auth").Account | null;
+    }) {
+      // Hanya untuk login Google (atau OAuth lain), dan hanya jika emailVerified masih null
+      if (
+        account?.provider === "google" &&
+        !(user as { emailVerified?: Date | null }).emailVerified
+      ) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { emailVerified: new Date() },
+        });
+      }
+    },
   },
 };

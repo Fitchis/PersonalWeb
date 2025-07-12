@@ -21,11 +21,17 @@ import AdminStats from "./components/AdminStats";
 import UserTable from "./components/UserTable";
 import NotificationModal from "./components/NotificationModal";
 import UserTableToolbar from "./components/UserTableToolbar";
+import Toast from "@/components/Toast";
 
 export default function AdminPage() {
   // Pagination state
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  // Toast state
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   // Search, filter, sort state
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | "">("");
@@ -80,13 +86,20 @@ export default function AdminPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Failed to delete users.");
+        setToast({
+          type: "error",
+          message: data.error || "Failed to delete users.",
+        });
         return;
       }
       setUsers((prev) => prev.filter((u) => !selectedUserIds.includes(u.id)));
       setSelectedUserIds([]);
+      setToast({ type: "success", message: "Users deleted successfully." });
     } catch {
-      alert("An error occurred while deleting users.");
+      setToast({
+        type: "error",
+        message: "An error occurred while deleting users.",
+      });
     }
   };
 
@@ -101,17 +114,29 @@ export default function AdminPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Failed to send notification.");
+        setToast({
+          type: "error",
+          message: data.error || "Failed to send notification.",
+        });
       } else {
-        alert("Notification sent!");
+        setToast({ type: "success", message: "Notification sent!" });
         setNotifOpen(false);
       }
     } catch {
-      alert("An error occurred while sending notification.");
+      setToast({
+        type: "error",
+        message: "An error occurred while sending notification.",
+      });
     } finally {
       setNotifLoading(false);
     }
   };
+  // Auto-hide toast after 3s
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -187,7 +212,15 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100">
       <AdminNavbar />
-
+      {toast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] animate-fade-in-up">
+          <Toast
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
       <div className="relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
