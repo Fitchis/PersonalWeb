@@ -87,4 +87,6 @@ model Notification {
   createdAt DateTime @default(now())
   type      String? 
   link      String? 
+
+  @@index([userId, createdAt])
 }

@@ -186,6 +186,7 @@ export default function SignInPage() {
 
             <button
               type="button"
+              onClick={() => signIn("github", { callbackUrl: "/" })}
               className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-zinc-800/50 text-zinc-300 text-sm font-medium border border-zinc-700/50 hover:bg-zinc-800 transition-all"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

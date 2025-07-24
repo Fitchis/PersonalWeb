@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { compare } from "bcryptjs";
+import GitHubProvider from "next-auth/providers/github";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -33,6 +34,10 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
   ],
   session: { strategy: "jwt" as const },
   callbacks: {
@@ -53,12 +58,18 @@ export const authOptions = {
       session: import("next-auth").Session;
       token: import("next-auth/jwt").JWT;
     }) {
-      // Only add id and role, preserve all original session fields (including expires)
       if (session.user && token?.sub) {
-        (session.user as { id?: string }).id = token.sub;
-      }
-      if (session.user && token?.role) {
-        (session.user as { role?: string }).role = token.role as string;
+        // Ambil user terbaru dari database
+        const user = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { name: true, image: true, role: true },
+        });
+        if (user) {
+          session.user.name = user.name;
+          session.user.image = user.image;
+          (session.user as { role?: string }).role = user.role;
+          (session.user as { id?: string }).id = token.sub;
+        }
       }
       return session;
     },
