@@ -6,8 +6,7 @@ const TRIPAY_MERCHANT_CODE = process.env.TRIPAY_MERCHANT_CODE;
 const TRIPAY_PRIVATE_KEY = process.env.TRIPAY_PRIVATE_KEY;
 // Gunakan endpoint sandbox jika credential sandbox, production jika production
 const TRIPAY_URL =
-  process.env.TRIPAY_URL ||
-  "https://tripay.co.id/api-sandbox/transaction/create";
+  process.env.TRIPAY_URL || "https://tripay.co.id/api/transaction/create";
 
 export async function POST() {
   // Ambil data user dari session jika perlu (atau dari body jika ingin custom)
@@ -42,9 +41,9 @@ export async function POST() {
     ],
     callback_url:
       process.env.TRIPAY_CALLBACK_URL ||
-      "http://localhost:3000/api/tripay/webhook",
+      "https://task2work.fun/api/tripay/webhook",
     return_url:
-      process.env.TRIPAY_RETURN_URL || "http://localhost:3000/profile/upgrade",
+      process.env.TRIPAY_RETURN_URL || "https://task2work.fun/profile/upgrade",
     signature,
     // Tambahkan field lain jika perlu
   };

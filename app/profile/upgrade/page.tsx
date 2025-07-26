@@ -1,10 +1,8 @@
 import Link from "next/link";
-import Navbar from "../../profile/upgrade/_components/Navbar";
 
 export default function UpgradeProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-950 flex flex-col relative overflow-hidden">
-      <Navbar />
       <div className="flex-1 flex items-center justify-center relative z-10">
         <div className="max-w-lg w-full mx-auto bg-gradient-to-br from-yellow-900/40 via-black/40 to-yellow-900/20 border border-yellow-700/30 rounded-3xl p-10 shadow-2xl text-center space-y-8">
           <div className="flex flex-col items-center gap-4">
