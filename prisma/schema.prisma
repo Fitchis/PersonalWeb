@@ -1,3 +1,10 @@
+model InterviewAnswer {
+  id           String   @id @default(cuid())
+  interviewId  String
+  interview    Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  answersJson  String
+  submittedAt  DateTime @default(now())
+}
 generator client {
   provider = "prisma-client-js"
 }
@@ -37,11 +44,13 @@ model User {
   createdAt     DateTime @default(now())
   image         String?
   role          String   @default("USER")
+  isPremium     Boolean  @default(false)
   todos         Todo[]
   jobApplications JobApplication[]
   accounts      Account[]
   sessions      Session[]
   notifications Notification[]
+  interviews    Interview[]
 }
 
 model Account {
@@ -89,4 +98,16 @@ model Notification {
   link      String? 
 
   @@index([userId, createdAt])
+}
+
+model Interview {
+  id             String   @id
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionsJson  String
+  jobPosition    String
+  jobDescription String
+  jobExperience  String
+  createdAt      DateTime @default(now())
+  interviewAnswers InterviewAnswer[]
 }
