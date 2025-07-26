@@ -10,7 +10,7 @@ import {
 import Navbar from "../../../_components/Navbar";
 
 interface ResultPageProps {
-  params: { mockId: string };
+  params: Promise<{ mockId: string }>;
 }
 
 // Ambil evaluasi AI dari questionsJson, bukan generate baru
@@ -34,14 +34,17 @@ function getAIEvaluationFromQuestionObj(
 }
 
 export default async function ResultPage({ params }: ResultPageProps) {
+  // Await the params promise
+  const { mockId } = await params;
+
   const interview = await prisma.interview.findUnique({
-    where: { id: params.mockId },
+    where: { id: mockId },
   });
   if (!interview) return notFound();
 
   // Ambil jawaban user
   const answer = await prisma.interviewAnswer.findFirst({
-    where: { interviewId: params.mockId },
+    where: { interviewId: mockId },
     orderBy: { submittedAt: "desc" },
   });
   let userAnswers: string[] = [];
