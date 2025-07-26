@@ -4,13 +4,11 @@ import { notFound } from "next/navigation";
 import InterviewAnswerClient from "@/app/dashboard/_components/InterviewAnswerClient";
 import Navbar from "../../_components/Navbar";
 
-interface InterviewDetailPageProps {
-  params: { mockId: string };
-}
-
 export default async function InterviewDetailPage({
   params,
-}: InterviewDetailPageProps) {
+}: {
+  params: { mockId: string };
+}) {
   const interview = await prisma.interview.findUnique({
     where: { id: params.mockId },
   });
