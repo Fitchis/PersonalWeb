@@ -1,7 +1,6 @@
 "use client";
-import PremiumPopup from "../components/popup";
-
 import React, { useState, useEffect } from "react";
+import PremiumPopup from "../components/popup";
 import { useSession } from "next-auth/react";
 import TodoList from "../components/todo/TodoList";
 import JobApplicationList from "../components/job/JobApplicationList";
@@ -93,7 +92,12 @@ export default function Home() {
   return (
     <>
       <main className="min-h-screen bg-black text-white relative overflow-hidden">
-        {showPremiumPopup && <PremiumPopup onClose={handleClosePremiumPopup} />}
+        {showPremiumPopup && (
+          <PremiumPopup
+            onClose={handleClosePremiumPopup}
+            isAuthenticated={status === "authenticated"}
+          />
+        )}
         {/* How to Use Popup */}
         <HowToUsePopup localStorageKey="howToUsePopupDismissed" />
         {/* Background Elements */}
@@ -180,69 +184,69 @@ export default function Home() {
                 <TodoList />
               </RequireAuth>
             </div>
-            {status === "authenticated" && (
-              <div className="mt-10 flex justify-center">
-                <Link
-                  href="/dashboard/interview"
-                  className="group relative flex items-center gap-4 px-8 py-5 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white font-semibold text-lg shadow-2xl hover:shadow-slate-500/25 border border-slate-700/50 hover:border-slate-600/80 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm"
-                >
-                  {/* Animated background glow */}
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+            {/* {status === "authenticated" && ( */}
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/dashboard/interview"
+                className="group relative flex items-center gap-4 px-8 py-5 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white font-semibold text-lg shadow-2xl hover:shadow-slate-500/25 border border-slate-700/50 hover:border-slate-600/80 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm"
+              >
+                {/* Animated background glow */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
 
-                  {/* Main content */}
-                  <div className="relative z-10 flex items-center gap-4">
-                    {/* Icon with subtle animation */}
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 group-hover:scale-110 transition-transform duration-300">
-                      <svg
-                        className="w-5 h-5 text-white group-hover:rotate-12 transition-transform duration-300"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-
-                    {/* Text content */}
-                    <div className="flex flex-col">
-                      <span className="text-white font-semibold">
-                        Dashboard Interview
-                      </span>
-                      <span className="text-slate-400 text-sm group-hover:text-slate-300 transition-colors duration-200">
-                        Start your session
-                      </span>
-                    </div>
-
-                    {/* Arrow indicator */}
-                    <div className="ml-4 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 group-hover:bg-white/20 group-hover:translate-x-2 transition-all duration-300">
-                      <svg
-                        className="w-4 h-4 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
+                {/* Main content */}
+                <div className="relative z-10 flex items-center gap-4">
+                  {/* Icon with subtle animation */}
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 group-hover:scale-110 transition-transform duration-300">
+                    <svg
+                      className="w-5 h-5 text-white group-hover:rotate-12 transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
                   </div>
 
-                  {/* Subtle shine effect */}
-                  <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                    <div className="absolute top-1 left-1 right-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full"></div>
+                  {/* Text content */}
+                  <div className="flex flex-col">
+                    <span className="text-white font-semibold">
+                      Dashboard Interview
+                    </span>
+                    <span className="text-slate-400 text-sm group-hover:text-slate-300 transition-colors duration-200">
+                      Start your session
+                    </span>
                   </div>
-                </Link>
-              </div>
-            )}
+
+                  {/* Arrow indicator */}
+                  <div className="ml-4 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 group-hover:bg-white/20 group-hover:translate-x-2 transition-all duration-300">
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Subtle shine effect */}
+                <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                  <div className="absolute top-1 left-1 right-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full"></div>
+                </div>
+              </Link>
+            </div>
+            {/* )} */}
           </section>
 
           {/* Job Applications Section */}

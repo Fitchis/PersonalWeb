@@ -62,13 +62,34 @@ export const authOptions = {
         // Ambil user terbaru dari database
         const user = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { name: true, image: true, role: true },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            role: true,
+            isPremium: true,
+            emailVerified: true,
+            createdAt: true,
+            accounts: {
+              select: {
+                provider: true,
+                providerAccountId: true,
+                type: true,
+              },
+            },
+          },
         });
         if (user) {
+          session.user.id = user.id;
           session.user.name = user.name;
+          session.user.email = user.email;
           session.user.image = user.image;
-          (session.user as { role?: string }).role = user.role;
-          (session.user as { id?: string }).id = token.sub;
+          session.user.role = user.role;
+          session.user.isPremium = user.isPremium;
+          session.user.emailVerified = user.emailVerified;
+          session.user.createdAt = user.createdAt;
+          session.user.accounts = user.accounts || [];
         }
       }
       return session;

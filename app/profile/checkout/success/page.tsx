@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Navbar from "../../../profile/upgrade/_components/Navbar";
+import Navbar from "../../_components/Navbar";
 
 export default function CheckoutSuccessPage() {
   return (

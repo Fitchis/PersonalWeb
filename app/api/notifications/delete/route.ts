@@ -10,6 +10,16 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      role?: string;
+      isPremium?: boolean;
+      createdAt?: Date;
+      updatedAt?: Date;
+      emailVerified?: Date | null;
+      accounts?: Array<{
+        provider: string;
+        providerAccountId: string;
+        type: string;
+      }>;
     };
   }
 }
