@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { GeminiSendMessage } from "@/lib/gemini";
 import { LoaderCircle, Plus, Briefcase, FileText, Clock } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
@@ -29,52 +28,19 @@ function AddNewInterview() {
     setError("");
     e.preventDefault();
 
-    const InputPrompt =
-      "Posisi Pekerjaan: " +
-      jobPosition +
-      ", Deskripsi Pekerjaan: " +
-      jobDescription +
-      ", Pengalaman Kerja (tahun): " +
-      jobExperience +
-      ", Berdasarkan informasi ini, buatkan 5 pertanyaan interview beserta jawabannya dalam format JSON berbahasa Indonesia.";
-
-    let result = "";
-    try {
-      result = await GeminiSendMessage.sendMessage(InputPrompt);
-    } catch {
-      setError("Gagal mendapatkan respon dari AI. Coba lagi.");
-      setLoading(false);
-      return;
-    }
-    const cleaned = result.replace(/```json|```/g, "").trim();
-    let mockJsonResp = null;
-    try {
-      mockJsonResp = JSON.parse(cleaned);
-      console.log(mockJsonResp);
-    } catch {
-      setError(
-        "Respon AI tidak valid JSON. Silakan coba lagi.\nRaw: " + cleaned
-      );
-      setLoading(false);
-      return;
-    }
-
-    // Kirim ke API route, bukan langsung ke DB
-    const mockId = uuidv4();
-    const response = await fetch("/api/interview", {
+    const response = await fetch("/api/interview/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        mockId,
-        jsonMockResponse: cleaned,
         jobPosition,
         jobDescription,
         jobExperience,
-        createdAt: new Date().toISOString(),
       }),
     });
 
     if (response.ok) {
+      const data = await response.json();
+      const mockId = data?.interview?.id || uuidv4();
       setOpenDialog(false);
       setJobPosition("");
       setJobDescription("");

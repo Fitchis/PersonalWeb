@@ -1,3 +1,36 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import { prisma } from "@/lib/prisma";
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (
+    !session ||
+    !session.user ||
+    (session.user as { role?: string }).role !== "ADMIN"
+  ) {
+    // Optionally log unauthorized access attempts
+    console.warn(
+      `Unauthorized admin API access attempt at ${new Date().toISOString()} from user:`,
+      session?.user?.email || "unknown"
+    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      emailVerified: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return NextResponse.json({ users });
+}
+
 export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions);
   if (
@@ -40,35 +73,4 @@ export async function DELETE(req: Request) {
     );
   }
 }
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
-import { prisma } from "@/lib/prisma";
-
-export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (
-    !session ||
-    !session.user ||
-    (session.user as { role?: string }).role !== "ADMIN"
-  ) {
-    // Optionally log unauthorized access attempts
-    console.warn(
-      `Unauthorized admin API access attempt at ${new Date().toISOString()} from user:`,
-      session?.user?.email || "unknown"
-    );
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const users = await prisma.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      emailVerified: true,
-      createdAt: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
-  return NextResponse.json({ users });
-}
+ 

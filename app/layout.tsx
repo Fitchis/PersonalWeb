@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Task2Work",
   description: "A personal web app for managing your tasks efficiently.",
+  manifest: "/manifest.json",
 };
 export default function RootLayout({
   children,

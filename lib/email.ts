@@ -1,13 +1,21 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const verifyUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/auth/verify?token=${token}`;
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const verifyUrl = `${baseUrl}/api/auth/verify?token=${token}`;
+  const from = process.env.RESEND_FROM || "onboarding@resend.dev"; // Use a verified sender in production
+
+  if (!resend) {
+    console.warn("Resend API key not set. Skipping email send.");
+    return;
+  }
+
   await resend.emails.send({
-    from: "onboarding@resend.dev", // Development only
-    to: "fitchisbox@gmail.com", // Use a verified sender from Resend
-    // to: email, // Uncomment this line in production
+    from,
+    to: email,
     subject: "Verify your email",
     html: `
       <h2>Verify your email</h2>
