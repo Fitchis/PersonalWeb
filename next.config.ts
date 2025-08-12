@@ -16,7 +16,10 @@ const nextConfig = {
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
       // Only include non-breaking defaults; CSP intentionally omitted here.
       // HSTS is safe on HTTPS and ignored on HTTP (dev).
-      { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+      {
+        key: "Strict-Transport-Security",
+        value: "max-age=63072000; includeSubDomains; preload",
+      },
       // Avoid breaking mic/camera by keeping Permissions-Policy minimal.
       { key: "Permissions-Policy", value: "interest-cohort=()" },
     ];

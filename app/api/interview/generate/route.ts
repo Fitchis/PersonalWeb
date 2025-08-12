@@ -15,11 +15,21 @@ export async function POST(req: NextRequest) {
     const { jobPosition, jobDescription, jobExperience } = await req.json();
     // Rate limit by IP
     const ip = ipFromRequestHeaders(req.headers);
-    const rl = rateLimit("interview-generate", ip, { max: 5, windowMs: 60_000 });
+    const rl = rateLimit("interview-generate", ip, {
+      max: 5,
+      windowMs: 60_000,
+    });
     if (!rl.ok) {
       return NextResponse.json(
         { error: "Too many requests" },
-        { status: 429, headers: { "Retry-After": Math.ceil((rl.resetAt - Date.now()) / 1000).toString() } }
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(
+              (rl.resetAt - Date.now()) / 1000
+            ).toString(),
+          },
+        }
       );
     }
     if (!jobPosition || !jobDescription) {

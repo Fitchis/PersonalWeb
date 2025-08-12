@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateText } from "@/lib/server-gemini";
 import { ipFromRequestHeaders, rateLimit } from "@/lib/rate-limit";
+import { buildChatGuidancePrefix } from "@/lib/ai-guidelines";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -14,7 +15,17 @@ export async function POST(req: NextRequest) {
     const ip = ipFromRequestHeaders(req.headers);
     const rl = rateLimit("ai-chat", ip);
     if (!rl.ok) {
-      return NextResponse.json({ reply: "Too many requests" }, { status: 429, headers: { "Retry-After": Math.ceil((rl.resetAt - Date.now()) / 1000).toString() } });
+      return NextResponse.json(
+        { reply: "Too many requests" },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(
+              (rl.resetAt - Date.now()) / 1000
+            ).toString(),
+          },
+        }
+      );
     }
     if (!Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ reply: "Invalid input" }, { status: 400 });
@@ -24,7 +35,9 @@ export async function POST(req: NextRequest) {
     if (totalLen > 4000) {
       return NextResponse.json({ reply: "Input too large" }, { status: 413 });
     }
-    const reply = await generateText(messages);
+  // Prepend guidance so answers align with website logic/features
+  const guided = [buildChatGuidancePrefix(), ...messages];
+  const reply = await generateText(guided);
     if (!reply) {
       return NextResponse.json({ reply: "Empty response" }, { status: 500 });
     }

@@ -9,7 +9,11 @@ function getKey(scope: string, id: string) {
   return `${scope}:${id}`;
 }
 
-export function rateLimit(scope: string, id: string, cfg?: Partial<WindowConfig>) {
+export function rateLimit(
+  scope: string,
+  id: string,
+  cfg?: Partial<WindowConfig>
+) {
   const windowMs = cfg?.windowMs ?? 60_000; // 1 minute
   const max = cfg?.max ?? 10; // 10 requests per window
   const now = Date.now();
