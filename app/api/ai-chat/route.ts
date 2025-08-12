@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
     if (totalLen > 4000) {
       return NextResponse.json({ reply: "Input too large" }, { status: 413 });
     }
-  // Prepend guidance so answers align with website logic/features
-  const guided = [buildChatGuidancePrefix(), ...messages];
-  const reply = await generateText(guided);
+    // Prepend guidance so answers align with website logic/features
+    const guided = [buildChatGuidancePrefix(), ...messages];
+    const reply = await generateText(guided);
     if (!reply) {
       return NextResponse.json({ reply: "Empty response" }, { status: 500 });
     }
