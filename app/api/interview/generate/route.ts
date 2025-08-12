@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { generateText } from "@/lib/server-gemini";
+import { ipFromRequestHeaders, rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -12,14 +13,26 @@ export async function POST(req: NextRequest) {
   }
   try {
     const { jobPosition, jobDescription, jobExperience } = await req.json();
+    // Rate limit by IP
+    const ip = ipFromRequestHeaders(req.headers);
+    const rl = rateLimit("interview-generate", ip, { max: 5, windowMs: 60_000 });
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": Math.ceil((rl.resetAt - Date.now()) / 1000).toString() } }
+      );
+    }
     if (!jobPosition || !jobDescription) {
       return NextResponse.json(
         { error: "jobPosition and jobDescription are required" },
         { status: 400 }
       );
     }
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const prompt = `Posisi Pekerjaan: ${jobPosition}, Deskripsi Pekerjaan: ${jobDescription}, Pengalaman Kerja (tahun): ${jobExperience}. Berdasarkan informasi ini, buatkan 5 pertanyaan interview beserta jawabannya dalam format JSON berbahasa Indonesia.`;
     const reply = await generateText([{ role: "user", content: prompt }]);
@@ -41,6 +54,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, interview: created });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    return NextResponse.json(
+      { error: (err as Error).message },
+      { status: 500 }
+    );
   }
 }

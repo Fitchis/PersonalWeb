@@ -7,7 +7,9 @@ export function getServerGemini() {
   return new GoogleGenAI({ apiKey });
 }
 
-export async function generateText(messages: Array<{ role: "user" | "assistant"; content: string }>) {
+export async function generateText(
+  messages: Array<{ role: "user" | "assistant"; content: string }>
+) {
   const ai = getServerGemini();
   const model = "gemini-1.5-flash";
   const contents = messages.map((m) => ({
